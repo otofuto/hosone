@@ -11,6 +11,9 @@ import (
 
 func main() {
 	port := os.Getenv("PORT")
+	if len(os.Args) > 1 {
+		port = os.Args[1]
+	}
 	if port == "" {
 		port = "5001"
 	}
