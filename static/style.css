@@ -1,0 +1,37 @@
+:root {
+    --hair: #00E0FF;
+    --eye1: #84E0A7;
+    --line: #10354F;
+}
+
+header {
+    position: fixed;
+    display: block;
+    width: 200px;
+    height: 200px;
+    clip-path: ellipse(200px 200px at right bottom);
+    background-color: var(--hair);
+    left: calc(100vw - 200px);
+    top: calc(100vh - 200px);
+    text-align: right;
+    color: white;
+    text-shadow: 2px 2px 2px #0003;
+    padding: 10px;
+    box-sizing: border-box;
+    transition: all 200ms ease;
+}
+
+header:hover {
+    width: 210px;
+    height: 210px;
+    clip-path: ellipse(210px 210px at right bottom);
+    left: calc(100vw - 210px);
+    top: calc(100vh - 210px);
+    padding: 20px 10px 10px 10px;
+}
+
+header>img {
+    margin-top: 25px;
+    border-radius: 8px;
+    box-shadow: 2px 2px 2px #0004;
+}

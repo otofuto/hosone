@@ -28,7 +28,12 @@ func IndexHandle(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == http.MethodGet {
 		filename := ""
-		if r.URL.Path == "/" {
+		if r.URL.Path == "/" ||
+			r.URL.Path == "/about" ||
+			r.URL.Path == "/detail" ||
+			r.URL.Path == "/request" ||
+			r.URL.Path == "/otft" ||
+			r.URL.Path == "/contact" {
 			filename = "index"
 		}
 		if filename == "" {
