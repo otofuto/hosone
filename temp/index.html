@@ -3,17 +3,46 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width">
+	    <!-- Twitter cards -->
+	    <meta name="twitter:card" content="summary_large_image">
+		<meta name="twitter:site" content="@NozomiCreated">
+		<meta name="twitter:creator" content="@OTFT_V">
+	    <meta property="og:type" content="website">
+		<meta name="twitter:url" property="og:url" content="https://hosone.work/">
+		<meta name="twitter:title" property="og:title" content="細音希の作品">
+		<meta name="twitter:description" property="og:description" content="マルチクリエイターOTFTの中の人である細音希の個人的な自己紹介ページ。">
+		<meta name="twitter:image" property="og:image" content="https://pbs.twimg.com/media/E3rUnbrUYAQG7t5?format=jpg&name=4096x4096">
         <title>細音希の作品</title>
         <link rel="stylesheet" href="/st/style.css">
     </head>
-    <body>
+    <body style="overflow: hidden;">
+        <div id="loading">
+            <p style="text-align: center; margin-top: 150px;">Loading...</p>
+        </div>
         <header>
             <img src="https://pbs.twimg.com/profile_images/1525746023586377728/-Sur1Yrp_400x400.jpg" width="100" height="100">
             <div>細音希の作品</div>
         </header>
+        <main id="top"></main>
+        <main id="about">
+            <h1>細音 希 (ほそね のぞみ)</h1>
+            <h2>プロフィール</h2>
+            <p><label>生年月日</label><span><script>document.write((new Date(new Date().getTime() - 441849600000)).getFullYear());</script>年 6月 18日</span></p>
+            <p><label>年齢</label><span>14歳</span></p>
+            <p><label>血液型</label><span>O型</span></p>
+            <p><label>身長</label><span>156 cm</span></p>
+            <p><label>体重</label><span>50 kg</span></p>
+            <h2>何やってる人？</h2>
+            <p>- <a href="#drawing">お絵描き</a></p>
+            <p>- <a href="#composition">作曲</a></p>
+            <p>- <a href="#programming">プログラミング</a></p>
+            <p>- <a href="#journey">車旅</a></p>
+        </main>
+        <main id="detail"></main>
+        <main id="request"></main>
+        <main id="otft"></main>
+        <main id="contact"></main>
         <main>
-            <p>やほやほ！のぞみんでお馴染みの細音希(ほそね のぞみ)だよ！</p>
-            <p>これからこのホームページを作っていくよ！</p>
             <p>
                 <button onclick="history.replaceState('', '', '/about')">about</button>
                 <button onclick="history.replaceState('', '', '/detail')">detail</button>
@@ -28,9 +57,15 @@
             </div>
         </footer>
         <script>
-            document.getElementById('ta').addEventListener('keydown', e => {
-                history.replaceState('', '', '/' + e.key);
-            });
+            function setHeight() {
+                document.documentElement.style.setProperty('--height', window.innerHeight + 'px');
+            }
+            setHeight();
+            window.onresize = () => setHeight();
+            window.onload = () => {
+                document.getElementById('loading').remove();
+                document.body.removeAttribute('style');
+            };
         </script>
     </body>
 </html>
