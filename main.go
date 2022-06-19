@@ -8,6 +8,8 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+
+	"golang.org/x/crypto/acme/autocert"
 )
 
 func main() {
@@ -19,11 +21,16 @@ func main() {
 		port = "5001"
 	}
 
-	http.Handle("/st/", http.StripPrefix("/st/", http.FileServer(http.Dir("./static"))))
-	http.HandleFunc("/", IndexHandle)
-	http.HandleFunc("/git", GitHandle)
+	mux := http.NewServeMux()
+	mux.Handle("/st/", http.StripPrefix("/st/", http.FileServer(http.Dir("./static"))))
+	mux.HandleFunc("/", IndexHandle)
+	mux.HandleFunc("/git", GitHandle)
 	log.Println("Listening on port: " + port)
-	if err := http.ListenAndServe(":"+port, nil); err != nil {
+	if port == "443" {
+		if err := http.Serve(autocert.NewListener("hosone.work"), mux); err != nil {
+			panic(err)
+		}
+	} else if err := http.ListenAndServe(":"+port, mux); err != nil {
 		panic(err)
 	}
 }
