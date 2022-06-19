@@ -53,10 +53,115 @@ header:hover {
     padding: 20px 10px 10px 10px;
 }
 
-header>img {
+header>a {
+    display: inline-block;
     margin-top: 25px;
+}
+
+header>a>img {
     border-radius: 8px;
     box-shadow: 2px 2px 2px #0004;
+}
+
+header+div {
+    position: fixed;
+    display: block;
+    left: calc(100vw - 270px);
+    top: calc(var(--height) - 270px);
+    width: 540px;
+    height: 270px;
+    z-index: 990;
+    border-radius: 300px 0 0 0;
+    transform: rotate(90deg);
+    transform-origin: 270px 270px;
+    transition: all 250ms ease;
+}
+
+header:hover+div {
+    transform: rotate(0deg);
+}
+
+header+div:hover {
+    transform: rotate(0deg);
+}
+
+.menu-icon-arm {
+    display: block;
+    position: absolute;
+    transition: all 250ms ease;
+    text-align: left;
+    width: 540px;
+    top: 270px;
+    left: 0;
+}
+
+.menu-icon {
+    display: inline-block;
+    position: relative;
+    transition: all 250ms ease;
+    width: 50px;
+    height: 50px;
+    transform-origin: 0%;
+}
+
+.menu-icon-arm:nth-of-type(1)>div {
+    transform: rotate(-165deg);
+}
+
+header:hover+div .menu-icon-arm:nth-of-type(1)>div {
+    transform: rotate(-75deg);
+}
+
+header+div:hover .menu-icon-arm:nth-of-type(1)>div {
+    transform: rotate(-75deg);
+}
+
+.menu-icon-arm:nth-of-type(2)>div {
+    transform: rotate(-150deg);
+}
+
+header:hover+div .menu-icon-arm:nth-of-type(2)>div {
+    transform: rotate(-60deg);
+}
+
+header+div:hover .menu-icon-arm:nth-of-type(2)>div {
+    transform: rotate(-60deg);
+}
+
+.menu-icon-arm:nth-of-type(3)>div {
+    transform: rotate(-135deg);
+}
+
+header:hover+div .menu-icon-arm:nth-of-type(3)>div {
+    transform: rotate(-45deg);
+}
+
+header+div:hover .menu-icon-arm:nth-of-type(3)>div {
+    transform: rotate(-45deg);
+}
+
+.menu-icon-arm:nth-of-type(4)>div {
+    transform: rotate(-120deg);
+}
+
+header:hover+div .menu-icon-arm:nth-of-type(4)>div {
+    transform: rotate(-30deg);
+}
+
+header+div:hover .menu-icon-arm:nth-of-type(4)>div {
+    transform: rotate(-30deg);
+}
+
+.menu-icon-arm:nth-of-type(5)>div {
+    transform: rotate(-105deg);
+}
+
+header:hover+div .menu-icon-arm:nth-of-type(5)>div {
+    transform: rotate(-15deg);
+}
+
+header+div:hover .menu-icon-arm:nth-of-type(5)>div {
+    transform: rotate(-15deg);
 }
 
 main#top {
