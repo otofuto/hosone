@@ -184,3 +184,23 @@ main#top {
     background-position: center;
     background-repeat: no-repeat;
 }
+
+.works {
+    display: block;
+    position: relative;
+    width: 100%;
+    max-width: 100%;
+    padding: 20px;
+    box-sizing: border-box;
+    border: solid 3px var(--eye1);
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.works img {
+    max-width: 40%;
+}
+
+.works video {
+    max-width: 100%;
+}
