@@ -27,6 +27,7 @@ func main() {
 	mux.HandleFunc("/git", GitHandle)
 	log.Println("Listening on port: " + port)
 	if port == "443" {
+		log.Println("SSL")
 		if err := http.Serve(autocert.NewListener("hosone.work"), mux); err != nil {
 			panic(err)
 		}
