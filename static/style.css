@@ -63,6 +63,15 @@ header>a>img {
     box-shadow: 2px 2px 2px #0004;
 }
 
+#menu_str {
+    display: block;
+    position: absolute;
+    left: 0;
+    top: 125px;
+    font-size: 50px;
+    width: 100%;
+}
+
 header+div {
     position: fixed;
     display: block;

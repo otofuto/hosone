@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"os/exec"
 )
 
 func main() {
@@ -20,6 +21,7 @@ func main() {
 
 	http.Handle("/st/", http.StripPrefix("/st/", http.FileServer(http.Dir("./static"))))
 	http.HandleFunc("/", IndexHandle)
+	http.HandleFunc("/git", GitHandle)
 	log.Println("Listening on port: " + port)
 	if err := http.ListenAndServe(":"+port, nil); err != nil {
 		panic(err)
@@ -48,6 +50,8 @@ func IndexHandle(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "500", 500)
 			return
 		}
+	} else {
+		http.Error(w, "method not allowed", 405)
 	}
 }
 
@@ -59,4 +63,31 @@ func Page404(w http.ResponseWriter) {
 	}
 	w.WriteHeader(404)
 	fmt.Fprintf(w, string(b))
+}
+
+func GitHandle(w http.ResponseWriter, r *http.Request) {
+	w.Header().Add("Content-Type", "text/html; charset=utf-8")
+
+	if r.Method == http.MethodGet {
+		if err := template.Must(template.ParseFiles("temp/git.html")).Execute(w, nil); err != nil {
+			log.Println(err)
+			http.Error(w, "500", 500)
+			return
+		}
+	} else if r.Method == http.MethodPost {
+		r.ParseMultipartForm(32 << 20)
+		if r.FormValue("a") == "pull" {
+			out, err := exec.Command("git", "pull").Output()
+			if err != nil {
+				log.Println(err)
+				http.Error(w, err.Error(), 500)
+				return
+			}
+			fmt.Fprintf(w, string(out))
+		} else {
+			http.Error(w, "?????", 400)
+		}
+	} else {
+		http.Error(w, "method not allowed", 405)
+	}
 }
