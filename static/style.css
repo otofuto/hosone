@@ -198,7 +198,8 @@ main#top {
 }
 
 .works img {
-    max-width: 40%;
+    width: 500px;
+    max-width: 100%;
 }
 
 .works video {
