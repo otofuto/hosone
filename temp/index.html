@@ -152,6 +152,8 @@
             function changePage(page) {
                 history.replaceState('', '', '/' + page);
                 viewContent();
+                document.querySelector('header+div').style.display = 'none';
+                setTimeout(() => document.querySelector('header+div').removeAttribute('style'), 350);
             }
         </script>
     </body>
