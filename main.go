@@ -91,7 +91,7 @@ func GitHandle(w http.ResponseWriter, r *http.Request) {
 				http.Error(w, err.Error(), 500)
 				return
 			}
-			fmt.Fprintf(w, string(out))
+			fmt.Fprintf(w, "<pre>"+string(out)+"</pre>")
 		} else {
 			http.Error(w, "?????", 400)
 		}
