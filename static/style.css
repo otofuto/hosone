@@ -32,28 +32,27 @@ div#loading {
 header {
     position: fixed;
     display: block;
-    width: 200px;
-    height: 200px;
-    clip-path: ellipse(200px 200px at right bottom);
+    width: 400px;
+    height: 400px;
+    border-radius: 50%;
     background-color: var(--hair);
     left: calc(100vw - 200px);
     top: calc(var(--height) - 200px);
     text-align: right;
     color: white;
     text-shadow: 2px 2px 2px #0003;
-    padding: 10px;
+    padding: 10px 200px 200px 10px;
     box-sizing: border-box;
     transition: all 200ms ease;
     z-index: 999;
 }
 
 header:hover {
-    width: 210px;
-    height: 210px;
-    clip-path: ellipse(210px 210px at right bottom);
+    width: 420px;
+    height: 420px;
     left: calc(100vw - 210px);
     top: calc(var(--height) - 210px);
-    padding: 20px 10px 10px 10px;
+    padding: 20px 210px 210px 10px;
 }
 
 header>img {
@@ -69,7 +68,7 @@ header>img {
     left: 0;
     top: 125px;
     font-size: 50px;
-    width: 100%;
+    width: 50%;
 }
 
 header+div {
