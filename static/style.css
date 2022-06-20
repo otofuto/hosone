@@ -47,6 +47,16 @@ header {
     z-index: 999;
 }
 
+@media screen and (max-width: 500px) {
+    header:focus {
+        width: 420px;
+        height: 420px;
+        left: calc(100vw - 210px);
+        top: calc(var(--height) - 210px);
+        padding: 20px 210px 210px 10px;
+    }
+}
+
 header:hover {
     width: 420px;
     height: 420px;
@@ -85,12 +95,23 @@ header+div {
     transition: all 250ms ease;
 }
 
+@media screen and (max-width: 500px) {
+    header:focus+div {
+        transform: rotate(0deg);
+    }
+
+    header+div:focus {
+        transform: rotate(0deg);
+    }
+}
 header:hover+div {
     transform: rotate(0deg);
 }
 
-header+div:hover {
-    transform: rotate(0deg);
+@media screen and (min-width: 500px) {
+    header+div:hover {
+        transform: rotate(0deg);
+    }
 }
 
 .menu-icon-arm {
@@ -116,16 +137,50 @@ header+div:hover {
     transform: rotate(-165deg);
 }
 
+.menu-icon-arm:nth-of-type(2)>div {
+    transform: rotate(-150deg);
+}
+
+.menu-icon-arm:nth-of-type(3)>div {
+    transform: rotate(-135deg);
+}
+
+.menu-icon-arm:nth-of-type(4)>div {
+    transform: rotate(-120deg);
+}
+
+.menu-icon-arm:nth-of-type(5)>div {
+    transform: rotate(-105deg);
+}
+
+@media screen and (max-width: 500px) {
+    header:focus+div .menu-icon-arm:nth-of-type(1)>div {
+        transform: rotate(-75deg);
+    }
+    
+    header:focus+div .menu-icon-arm:nth-of-type(2)>div {
+        transform: rotate(-60deg);
+    }
+    
+    header:focus+div .menu-icon-arm:nth-of-type(3)>div {
+        transform: rotate(-45deg);
+    }
+    
+    header:focus+div .menu-icon-arm:nth-of-type(4)>div {
+        transform: rotate(-30deg);
+    }
+    
+    header:focus+div .menu-icon-arm:nth-of-type(5)>div {
+        transform: rotate(-15deg);
+    }
+}
+
 header:hover+div .menu-icon-arm:nth-of-type(1)>div {
     transform: rotate(-75deg);
 }
 
 header+div:hover .menu-icon-arm:nth-of-type(1)>div {
     transform: rotate(-75deg);
-}
-
-.menu-icon-arm:nth-of-type(2)>div {
-    transform: rotate(-150deg);
 }
 
 header:hover+div .menu-icon-arm:nth-of-type(2)>div {
@@ -136,10 +191,6 @@ header+div:hover .menu-icon-arm:nth-of-type(2)>div {
     transform: rotate(-60deg);
 }
 
-.menu-icon-arm:nth-of-type(3)>div {
-    transform: rotate(-135deg);
-}
-
 header:hover+div .menu-icon-arm:nth-of-type(3)>div {
     transform: rotate(-45deg);
 }
@@ -148,20 +199,12 @@ header+div:hover .menu-icon-arm:nth-of-type(3)>div {
     transform: rotate(-45deg);
 }
 
-.menu-icon-arm:nth-of-type(4)>div {
-    transform: rotate(-120deg);
-}
-
 header:hover+div .menu-icon-arm:nth-of-type(4)>div {
     transform: rotate(-30deg);
 }
 
 header+div:hover .menu-icon-arm:nth-of-type(4)>div {
     transform: rotate(-30deg);
-}
-
-.menu-icon-arm:nth-of-type(5)>div {
-    transform: rotate(-105deg);
 }
 
 header:hover+div .menu-icon-arm:nth-of-type(5)>div {
