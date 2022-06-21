@@ -58,7 +58,7 @@
             function sub() {
                 fetch('/git', {
                     method: 'POST',
-                    data: new FormData(document.fm)
+                    body: new FormData(document.fm)
                 }).then(res => res.text())
                 .then(res => {
                     document.getElementById('result').innerHTML = res;
