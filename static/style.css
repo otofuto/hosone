@@ -1,10 +1,11 @@
 @import url('https://fonts.googleapis.com/css2?family=Kiwi+Maru&display=swap');
 
 :root {
-    --hair: #00E0FF;
-    --eye1: #84E0A7;
-    --line: #10354F;
-    --wear1: #E5F2FC;
+    --hair: #00e0ff;
+    --eye1: #84e0a7;
+    --line: #10354f;
+    --wear1: #e5f2fc;
+    --pin: #ff95c9;
     --height: 100vh;
 }
 
@@ -18,6 +19,10 @@ body {
     margin: 0 auto;
     font-family: 'Kiwi Maru', serif;
     color: var(--line);
+}
+
+a {
+    color: var(--pin);
 }
 
 div#loading {
@@ -285,6 +290,7 @@ h2:after {
     width: calc(100% - 20px);
     height: 20%;
     background-color: #7ec9ffd8;
+    border-radius: 50px;
     z-index: -1;
 }
 
@@ -322,8 +328,14 @@ p.listing>span {
     overflow: hidden;
 }
 
+.works:before {
+    content: 'WORKS';
+    color: var(--eye1);
+    display: block;
+}
+
 .works img {
-    width: 400px;
+    width: 380px;
     max-width: 100%;
 }
 
