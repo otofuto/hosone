@@ -255,7 +255,7 @@ main#top {
     width: 100%;
     height: calc(var(--height) / 2);
     max-height: 500px;
-    background-image: url('https://pbs.twimg.com/profile_banners/1009077761997135873/1654184683/1500x500');
+    background-image: url('/st/materials/top_image.jpeg');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
