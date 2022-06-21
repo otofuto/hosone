@@ -13,7 +13,9 @@
 		<meta name="twitter:description" property="og:description" content="マルチクリエイターOTFTの中の人である細音希の個人的な自己紹介ページ。">
 		<meta name="twitter:image" property="og:image" content="https://pbs.twimg.com/media/E3rUnbrUYAQG7t5?format=jpg&name=4096x4096">
         <title>細音希の作品</title>
-        <link rel="stylesheet" href="/st/style.css">
+        <link rel="stylesheet" href="/st/style.css?202206211332">
+        <style>
+        </style>
     </head>
     <body style="overflow: hidden;">
         <div id="loading">
@@ -25,13 +27,13 @@
         </header>
         <div>
             <div class="menu-icon-arm" style="transform: rotate(75deg);">
-                <div class="menu-icon" onclick="changePage('about')"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"></path></svg></div>
+                <div class="menu-icon" onclick="changePage('about')"><img src="/st/materials/icon_about.png"></div>
             </div>
             <div class="menu-icon-arm" style="transform: rotate(60deg);">
-                <div class="menu-icon" onclick="changePage('detail')"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg></div>
+                <div class="menu-icon" onclick="changePage('detail')"><img src="/st/materials/icon_detail.png"></div>
             </div>
             <div class="menu-icon-arm" style="transform: rotate(45deg);">
-                <div class="menu-icon" onclick="changePage('request')"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg></div>
+                <div class="menu-icon" onclick="changePage('request')"><img src="/st/materials/icon_request.png"></div>
             </div>
             <div class="menu-icon-arm" style="transform: rotate(30deg);">
                 <div class="menu-icon" onclick="changePage('otft')"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg></div>
@@ -49,6 +51,7 @@
             <p class="listing"><label>血液型</label><span>O型</span></p>
             <p class="listing"><label>身長</label><span>156 cm</span></p>
             <p class="listing"><label>体重</label><span>50 kg</span></p>
+            <p class="listing"><label>好きなギタリスト</label><span>マイケルアンジェロ先生</span></p>
             <h2>何やってる人？</h2>
             <p>お絵描き、作曲、プログラミングとか、割と多趣味な旅人だよ。</p>
             <p>車で日本中をぶらぶらしながら、プログラミングのお仕事で生計を立てているよ。</p>
@@ -158,6 +161,7 @@
                 history.replaceState('', '', '/' + page);
                 viewContent();
                 document.querySelector('header+div').style.display = 'none';
+                document.getElementById(page).scrollIntoView();
                 setTimeout(() => document.querySelector('header+div').removeAttribute('style'), 350);
             }
         </script>
