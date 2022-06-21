@@ -26,20 +26,20 @@
             <div id="menu_str">MENU</div>
         </header>
         <div>
-            <div class="menu-icon-arm" style="transform: rotate(75deg);">
+            <div class="menu-icon-arm" data-name="about">
                 <div class="menu-icon" onclick="changePage('about')"><img src="/st/materials/icon_about.png"></div>
             </div>
-            <div class="menu-icon-arm" style="transform: rotate(60deg);">
+            <div class="menu-icon-arm" data-name="detail">
                 <div class="menu-icon" onclick="changePage('detail')"><img src="/st/materials/icon_detail.png"></div>
             </div>
-            <div class="menu-icon-arm" style="transform: rotate(45deg);">
+            <div class="menu-icon-arm" data-name="request">
                 <div class="menu-icon" onclick="changePage('request')"><img src="/st/materials/icon_request.png"></div>
             </div>
-            <div class="menu-icon-arm" style="transform: rotate(30deg);">
-                <div class="menu-icon" onclick="changePage('otft')"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg></div>
+            <div class="menu-icon-arm" data-name="otft">
+                <div class="menu-icon" onclick="changePage('otft')"><img src="/st/materials/icon_otft.png"></div>
             </div>
-            <div class="menu-icon-arm" style="transform: rotate(15deg);">
-                <div class="menu-icon" onclick="changePage('contact')"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg></div>
+            <div class="menu-icon-arm" data-name="contact">
+                <div class="menu-icon" onclick="changePage('contact')"><img src="/st/materials/icon_contact.png"></div>
             </div>
         </div>
         <main id="top" tabindex="0"></main>
@@ -156,6 +156,13 @@
                 document.getElementById('request').style.display = location.pathname == '/request' ? 'block' : 'none';
                 document.getElementById('otft').style.display = location.pathname == '/otft' ? 'block' : 'none';
                 document.getElementById('contact').style.display = location.pathname == '/contact' ? 'block' : 'none';
+                let page = location.pathname.substring(1);
+                document.querySelector('header+div').appendChild(document.querySelector('[data-name="about"]'));
+                document.querySelector('header+div').appendChild(document.querySelector('[data-name="detail"]'));
+                document.querySelector('header+div').appendChild(document.querySelector('[data-name="request"]'));
+                document.querySelector('header+div').appendChild(document.querySelector('[data-name="otft"]'));
+                document.querySelector('header+div').appendChild(document.querySelector('[data-name="contact"]'));
+                document.querySelector('header+div').appendChild(document.querySelector('[data-name="' + page + '"]'));
             }
             function changePage(page) {
                 history.replaceState('', '', '/' + page);

@@ -119,12 +119,17 @@ header:hover+div {
     left: 0;
 }
 
+.menu-icon-arm:nth-of-type(5) {
+    display: none;
+}
+
 .menu-icon {
     display: inline-block;
     position: relative;
     transition: all 250ms ease;
     width: 55px;
     height: 55px;
+    line-height: 55px;
     transform-origin: 0%;
 }
 
@@ -143,90 +148,92 @@ header:hover+div {
 }
 
 .menu-icon>img {
+    display: inline-block;
+    vertical-align: middle;
     max-width: 100%;
     max-height: 100%;
 }
 
+.menu-icon-arm:nth-of-type(1) {
+    transform: rotate(72deg);
+}
+
+.menu-icon-arm:nth-of-type(2) {
+    transform: rotate(54deg);
+}
+
+.menu-icon-arm:nth-of-type(3) {
+    transform: rotate(36deg);
+}
+
+.menu-icon-arm:nth-of-type(4) {
+    transform: rotate(18deg);
+}
+
 .menu-icon-arm:nth-of-type(1)>div {
-    transform: rotate(-165deg);
+    transform: rotate(-162deg);
 }
 
 .menu-icon-arm:nth-of-type(2)>div {
-    transform: rotate(-150deg);
+    transform: rotate(-144deg);
 }
 
 .menu-icon-arm:nth-of-type(3)>div {
-    transform: rotate(-135deg);
+    transform: rotate(-126deg);
 }
 
 .menu-icon-arm:nth-of-type(4)>div {
-    transform: rotate(-120deg);
-}
-
-.menu-icon-arm:nth-of-type(5)>div {
-    transform: rotate(-105deg);
+    transform: rotate(-108deg);
 }
 
 @media screen and (max-width: 500px) {
     header:focus+div .menu-icon-arm:nth-of-type(1)>div {
-        transform: rotate(-75deg);
+        transform: rotate(-72deg);
     }
     
     header:focus+div .menu-icon-arm:nth-of-type(2)>div {
-        transform: rotate(-60deg);
+        transform: rotate(-54deg);
     }
     
     header:focus+div .menu-icon-arm:nth-of-type(3)>div {
-        transform: rotate(-45deg);
+        transform: rotate(-36deg);
     }
     
     header:focus+div .menu-icon-arm:nth-of-type(4)>div {
-        transform: rotate(-30deg);
-    }
-    
-    header:focus+div .menu-icon-arm:nth-of-type(5)>div {
-        transform: rotate(-15deg);
+        transform: rotate(-18deg);
     }
 }
 
 header:hover+div .menu-icon-arm:nth-of-type(1)>div {
-    transform: rotate(-75deg);
+    transform: rotate(-72deg);
 }
 
 header+div:hover .menu-icon-arm:nth-of-type(1)>div {
-    transform: rotate(-75deg);
+    transform: rotate(-72deg);
 }
 
 header:hover+div .menu-icon-arm:nth-of-type(2)>div {
-    transform: rotate(-60deg);
+    transform: rotate(-54deg);
 }
 
 header+div:hover .menu-icon-arm:nth-of-type(2)>div {
-    transform: rotate(-60deg);
+    transform: rotate(-54deg);
 }
 
 header:hover+div .menu-icon-arm:nth-of-type(3)>div {
-    transform: rotate(-45deg);
+    transform: rotate(-36deg);
 }
 
 header+div:hover .menu-icon-arm:nth-of-type(3)>div {
-    transform: rotate(-45deg);
+    transform: rotate(-36deg);
 }
 
 header:hover+div .menu-icon-arm:nth-of-type(4)>div {
-    transform: rotate(-30deg);
+    transform: rotate(-18deg);
 }
 
 header+div:hover .menu-icon-arm:nth-of-type(4)>div {
-    transform: rotate(-30deg);
-}
-
-header:hover+div .menu-icon-arm:nth-of-type(5)>div {
-    transform: rotate(-15deg);
-}
-
-header+div:hover .menu-icon-arm:nth-of-type(5)>div {
-    transform: rotate(-15deg);
+    transform: rotate(-18deg);
 }
 
 main {
