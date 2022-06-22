@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"strings"
 	"time"
 
 	"golang.org/x/crypto/acme/autocert"
@@ -51,18 +52,33 @@ func IndexHandle(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Println(err)
 	}
+	xForwardedFor := r.Header.Get("X-Forwarded-For")
+	if xForwardedFor == "" {
+		xForwardedFor = r.RemoteAddr
+	}
+	if xForwardedFor == "" {
+		for k, v := range r.Header {
+			if strings.ToLower(k) == "x-forwarded-for" {
+				xForwardedFor += strings.Join(v, ",")
+			}
+		}
+	}
 	obj := struct {
 		Time    string                   `json:"time"`
 		Method  string                   `json:"method"`
 		IP      string                   `json:"ip"`
 		UA      string                   `json:"ua"`
 		Cookies []map[string]interface{} `json:"cookies"`
+		Path    string                   `json:"path"`
+		Hint    string                   `json:"hint"`
 	}{
 		Time:    time.Now().Format("2006-01-02 15:04:05"),
 		Method:  r.Method,
-		IP:      r.Header.Get("X-Forwarded-For"),
+		IP:      xForwardedFor,
 		UA:      r.UserAgent(),
 		Cookies: cookies,
+		Path:    r.URL.Path,
+		Hint:    r.FormValue("h"),
 	}
 	content, err := json.Marshal(obj)
 	if err != nil {
