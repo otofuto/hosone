@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"html/template"
 	"io/ioutil"
@@ -8,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"time"
 
 	"golang.org/x/crypto/acme/autocert"
 )
@@ -41,6 +43,42 @@ func main() {
 
 func IndexHandle(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "text/html; charset=utf-8")
+
+	//log
+	cookiesjson, err := json.Marshal(r.Cookies())
+	var cookies []map[string]interface{}
+	err = json.Unmarshal(cookiesjson, &cookies)
+	if err != nil {
+		log.Println(err)
+	}
+	obj := struct {
+		Time    string                   `json:"time"`
+		Method  string                   `json:"method"`
+		IP      string                   `json:"ip"`
+		UA      string                   `json:"ua"`
+		Cookies []map[string]interface{} `json:"cookies"`
+	}{
+		Time:    time.Now().Format("2006-01-02 15:04:05"),
+		Method:  r.Method,
+		IP:      r.Header.Get("X-Forwarded-For"),
+		UA:      r.UserAgent(),
+		Cookies: cookies,
+	}
+	content, err := json.Marshal(obj)
+	if err != nil {
+		log.Println(err)
+	} else {
+		f, err := os.OpenFile("./static/log.json", os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0666)
+		if err != nil {
+			log.Println(err)
+		} else {
+			defer f.Close()
+			_, err := f.WriteString(string(content) + ",\n")
+			if err != nil {
+				log.Println(err)
+			}
+		}
+	}
 
 	if r.Method == http.MethodGet {
 		filename := ""
