@@ -73,7 +73,7 @@
                 document.getElementById('loading').remove();
                 document.body.removeAttribute('style');
                 document.querySelectorAll('[data-src]').forEach(elm => elm.setAttribute('src', elm.getAttribute('data-src')));
-                fetch('/st/contents/about.html').then(res => res.text()).then(res => document.getElementById('about').innerHTML = res);
+                fetch('/st/contents/about.html').then(res => res.text()).then(res => document.getElementById('about').innerHTML = res.replace('1997', (new Date(new Date().getTime() - 441849600000)).getFullYear()));
                 fetch('/st/contents/detail.html').then(res => res.text()).then(res => document.getElementById('detail').innerHTML = res);
                 fetch('/st/contents/request.html').then(res => res.text()).then(res => document.getElementById('request').innerHTML = res);
                 fetch('/st/contents/otft.html').then(res => res.text()).then(res => document.getElementById('otft').innerHTML = res);
