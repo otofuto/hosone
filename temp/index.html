@@ -101,6 +101,11 @@
                 document.getElementById(page).scrollIntoView();
                 setTimeout(() => document.querySelector('header+div').removeAttribute('style'), 350);
             }
+            function log() {
+                fetch('/st/log.json').then(res => res.text()).then(res => {
+                    console.log(JSON.parse('[' + res.substring(0, res.length - 2) + ']'));
+                });
+            }
         </script>
     </body>
 </html>
