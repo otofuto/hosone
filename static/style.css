@@ -255,7 +255,7 @@ main#top {
     width: 100%;
     height: calc(var(--height) / 2);
     max-height: 500px;
-    background-image: url('/st/materials/top_image.jpeg');
+    background-image: url('/materials/top_image.jpeg');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -274,7 +274,7 @@ main:not(#top) {
 h2 {
     position: relative;
     width: max-content;
-    background-image: url('/st/materials/h2.png');
+    background-image: url('/materials/h2.png');
     background-size: contain;
     background-repeat: no-repeat;
     background-position: left;
@@ -297,7 +297,7 @@ h2:after {
 h3 {
     position: relative;
     width: max-content;
-    background-image: url('/st/materials/h3.png');
+    background-image: url('/materials/h3.png');
     background-size: 21px;
     background-repeat: no-repeat;
     background-position: left;

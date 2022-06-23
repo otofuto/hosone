@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"html/template"
+	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -31,6 +32,7 @@ func main() {
 	mux.Handle("/st/", http.StripPrefix("/st/", http.FileServer(http.Dir("./static"))))
 	mux.HandleFunc("/", IndexHandle)
 	mux.HandleFunc("/git", GitHandle)
+	mux.HandleFunc("/materials/", MatHandle)
 	log.Println("Listening on port: " + port)
 	if port == "443" {
 		log.Println("SSL")
@@ -160,5 +162,39 @@ func GitHandle(w http.ResponseWriter, r *http.Request) {
 		}
 	} else {
 		http.Error(w, "method not allowed", 405)
+	}
+}
+
+func MatHandle(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodGet {
+		if r.UserAgent() == "" {
+			http.Error(w, "ua is required", 400)
+			return
+		}
+		filename := r.URL.Path[len("/materials/"):]
+		if strings.Index(r.Header.Get("Accept"), "image/webp") >= 0 {
+			if strings.Index(filename, ".") > 0 {
+				filename = filename[:strings.LastIndex(filename, ".")]
+			}
+			filename = "webp/" + filename + ".webp"
+			_, err := os.Stat("materials/" + filename)
+			if err != nil {
+				filename = r.URL.Path[len("/materials/"):]
+			}
+		}
+		file, err := os.Open("materials/" + filename)
+		if err != nil {
+			http.Error(w, err.Error(), 404)
+			return
+		}
+		defer file.Close()
+		if strings.Index(filename, ".") > 0 {
+			w.Header().Add("Content-Type", "image/"+filename[strings.LastIndex(filename, ".")+1:])
+		} else {
+			w.Header().Add("Content-Type", "image/png")
+		}
+		io.Copy(w, file)
+	} else {
+		http.Error(w, "method not alllowed", 405)
 	}
 }
