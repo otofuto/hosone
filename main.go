@@ -45,6 +45,12 @@ func main() {
 func IndexHandle(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "text/html; charset=utf-8")
 
+	//UA無しは通さない
+	if r.UserAgent() == "" {
+		http.Error(w, "UAつけて出直してこい", 400)
+		return
+	}
+
 	//log
 	cookiesjson, err := json.Marshal(r.Cookies())
 	var cookies []map[string]interface{}
