@@ -7,6 +7,7 @@
     --wear1: #e5f2fc;
     --pin: #ff95c9;
     --height: 100vh;
+    --bgtop: 10vh;
 }
 
 body {
@@ -19,6 +20,12 @@ body {
     margin: 0 auto;
     font-family: 'Kiwi Maru', serif;
     color: var(--line);
+    background-image: url(/materials/bg_mini.png);
+    background-size: auto 120vh;
+    background-position: 50% var(--bgtop);
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-color: var(--wear1);
 }
 
 a {
@@ -326,6 +333,7 @@ p.listing>span {
     border: solid 3px var(--eye1);
     border-radius: 15px;
     overflow: hidden;
+    background-color: #ffffffab;
 }
 
 .works:before {

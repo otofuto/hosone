@@ -80,6 +80,10 @@
                 fetch('/st/contents/otft.html').then(res => res.text()).then(res => document.getElementById('otft').innerHTML = res);
                 fetch('/st/contents/contact.html').then(res => res.text()).then(res => document.getElementById('contact').innerHTML = res);
             };
+            window.onscroll = () => {
+                document.documentElement.style.setProperty('--bgtop',
+                    -1 * (window.scrollY / (document.body.offsetHeight - window.innerHeight) * 20) + 'vh');
+            };
             viewContent();
             function viewContent() {
                 document.getElementById('about').style.display = location.pathname == '/' || location.pathname == '/about' ? 'block' : 'none';
