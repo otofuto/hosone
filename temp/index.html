@@ -98,6 +98,7 @@
                 document.querySelector('header+div').appendChild(document.querySelector('[data-name="otft"]'));
                 document.querySelector('header+div').appendChild(document.querySelector('[data-name="contact"]'));
                 if (page != '') document.querySelector('header+div').appendChild(document.querySelector('[data-name="' + page + '"]'));
+                else document.querySelector('header+div').appendChild(document.querySelector('[data-name="about"]'));
             }
             function changePage(page) {
                 history.replaceState('', '', '/' + page);
