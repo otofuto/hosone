@@ -262,10 +262,48 @@ main#top {
     width: 100%;
     height: calc(var(--height) / 2);
     max-height: 500px;
-    background-image: url('/materials/top_image.jpeg');
+    background-image: url('/materials/top_image2.png');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
+}
+
+main#top::before {
+    content: '';
+    display: block;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('/materials/top_image3.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 1;
+    animation-name: br;
+    animation-timing-function: ease;
+    animation-duration: 15s;
+    animation-delay: 1s;
+    animation-iteration-count: infinite;
+}
+
+@keyframes br {
+    0% {
+        opacity: 1;
+    }
+
+    10% {
+        opacity: 0;
+    }
+
+    50% {
+        opacity: 0;
+    }
+
+    60% {
+        opacity: 1;
+    }
 }
 
 main:not(#top) {
