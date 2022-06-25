@@ -33,6 +33,7 @@ func main() {
 	mux.HandleFunc("/", IndexHandle)
 	mux.HandleFunc("/git", GitHandle)
 	mux.HandleFunc("/materials/", MatHandle)
+	mux.HandleFunc("/favicon.ico", FaviconHandle)
 	log.Println("Listening on port: " + port)
 	if port == "443" {
 		log.Println("SSL")
@@ -69,7 +70,8 @@ func IndexHandle(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 	}
-	if strings.HasPrefix(xForwardedFor, "54.") {
+	if strings.HasPrefix(xForwardedFor, "54.") ||
+		strings.HasPrefix(xForwardedFor, "34.") {
 		http.Error(w, "I HATE ACCESS FROM EC2", 400)
 		return
 	}
@@ -197,12 +199,31 @@ func MatHandle(w http.ResponseWriter, r *http.Request) {
 		}
 		defer file.Close()
 		if strings.Index(filename, ".") > 0 {
-			w.Header().Add("Content-Type", "image/"+filename[strings.LastIndex(filename, ".")+1:])
+			if strings.HasSuffix(filename, ".ico") {
+				w.Header().Add("Content-Type", "image/vnd.microsoft.icon")
+			} else {
+				w.Header().Add("Content-Type", "image/"+filename[strings.LastIndex(filename, ".")+1:])
+			}
 		} else {
 			w.Header().Add("Content-Type", "image/png")
 		}
 		io.Copy(w, file)
 	} else {
 		http.Error(w, "method not alllowed", 405)
+	}
+}
+
+func FaviconHandle(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodGet {
+		w.Header().Add("Content-Type", "image/vnd.microsoft.icon")
+		f, err := os.Open("materials/favicon.ico")
+		if err != nil {
+			http.Error(w, err.Error(), 500)
+			return
+		}
+		defer f.Close()
+		io.Copy(w, f)
+	} else {
+		http.Error(w, "method not allowed", 405)
 	}
 }
