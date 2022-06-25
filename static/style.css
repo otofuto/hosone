@@ -262,6 +262,7 @@ main#top {
     width: 100%;
     height: calc(var(--height) / 2);
     max-height: 500px;
+    min-height: 33vw;
     background-image: url('/materials/top_image2.png');
     background-size: cover;
     background-position: center;
