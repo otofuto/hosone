@@ -6,12 +6,10 @@
         <meta name="robots" content="noindex">
         <title>git | 細音希の作品</title>
         <link rel="stylesheet" href="/st/style.css?20220623">
+        <link rel="stylesheet" href="/st/loading.css">
         <link rel="icon" href="/materials/favicon.ico">
     </head>
-    <body style="overflow: hidden;">
-        <div id="loading">
-            <p style="text-align: center; margin-top: 150px;">Loading...</p>
-        </div>
+    <body>
         <header tabindex="0">
             <img src="/materials/header_icon.jpeg" width="100" height="100">
             <div id="menu_str">MENU</div>
@@ -52,10 +50,6 @@
             }
             setHeight();
             window.onresize = () => setHeight();
-            window.onload = () => {
-                document.getElementById('loading').remove();
-                document.body.removeAttribute('style');
-            };
             function sub() {
                 fetch('/git', {
                     method: 'POST',
