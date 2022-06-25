@@ -51,15 +51,13 @@ func IndexHandle(w http.ResponseWriter, r *http.Request) {
 	if r.UserAgent() == "" {
 		http.Error(w, "UAつけて出直してこい", 400)
 		return
+	} else if strings.HasPrefix(r.UserAgent(), "curl/") {
+		//curl禁止
+		http.Error(w, "ばーかばーか", 400)
+		return
 	}
 
 	//log
-	cookiesjson, err := json.Marshal(r.Cookies())
-	var cookies []map[string]interface{}
-	err = json.Unmarshal(cookiesjson, &cookies)
-	if err != nil {
-		log.Println(err)
-	}
 	xForwardedFor := r.Header.Get("X-Forwarded-For")
 	if xForwardedFor == "" {
 		xForwardedFor = r.RemoteAddr
@@ -70,6 +68,16 @@ func IndexHandle(w http.ResponseWriter, r *http.Request) {
 				xForwardedFor += strings.Join(v, ",")
 			}
 		}
+	}
+	if strings.HasPrefix(xForwardedFor, "54.") {
+		http.Error(w, "I HATE ACCESS FROM EC2", 400)
+		return
+	}
+	cookiesjson, err := json.Marshal(r.Cookies())
+	var cookies []map[string]interface{}
+	err = json.Unmarshal(cookiesjson, &cookies)
+	if err != nil {
+		log.Println(err)
 	}
 	obj := struct {
 		Time    string                   `json:"time"`
