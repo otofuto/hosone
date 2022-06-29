@@ -134,7 +134,12 @@
                         div3.appendChild(mt);
                         let ip = document.createElement('span');
                         ip.setAttribute('class', 'ip');
-                        ip.innerText = l.ip;
+                        let ip2 = document.createElement('a');
+                        ip2.innerText = l.ip.substring(0, l.ip.lastIndexOf(':'));
+                        ip2.setAttribute('target', '_blank');
+                        ip2.setAttribute('href', 'https://www.iputilities.net/result.php?userip=' + l.ip.substring(0, l.ip.lastIndexOf(':')));
+                        ip.appendChild(ip2);
+                        ip.appendChild(document.createTextNode(l.ip.substring(l.ip.lastIndexOf(':'))));
                         div3.appendChild(ip);
                         let pt = document.createElement('span');
                         pt.setAttribute('class', 'pt');

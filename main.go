@@ -71,8 +71,9 @@ func IndexHandle(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	if strings.HasPrefix(xForwardedFor, "54.") ||
-		strings.HasPrefix(xForwardedFor, "34.") {
-		http.Error(w, "I HATE ACCESS FROM EC2", 400)
+		strings.HasPrefix(xForwardedFor, "34.") ||
+		strings.HasPrefix(xForwardedFor, "61.147.") {
+		http.Error(w, "Blocked IP", 400)
 		return
 	}
 	cookiesjson, err := json.Marshal(r.Cookies())
