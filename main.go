@@ -123,6 +123,8 @@ func IndexHandle(w http.ResponseWriter, r *http.Request) {
 			r.URL.Path == "/otft" ||
 			r.URL.Path == "/contact" {
 			filename = "index"
+		} else if r.URL.Path == "/test" {
+			filename = "test"
 		}
 		if filename == "" {
 			Page404(w)
