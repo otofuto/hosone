@@ -72,6 +72,7 @@ func IndexHandle(w http.ResponseWriter, r *http.Request) {
 	}
 	if strings.HasPrefix(xForwardedFor, "54.") ||
 		strings.HasPrefix(xForwardedFor, "34.") ||
+		strings.HasPrefix(xForwardedFor, "66.") ||
 		strings.HasPrefix(xForwardedFor, "61.147.") {
 		http.Error(w, "Blocked IP", 400)
 		return
@@ -114,6 +115,15 @@ func IndexHandle(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 	}
+	cookie := &http.Cookie{
+		Domain:   "hosone.work",
+		Name:     "history",
+		Value:    time.Now().Format("2006-01-02 15:04:05"),
+		Path:     "/",
+		HttpOnly: true,
+		MaxAge:   3600 * 24 * 7 * 4,
+	}
+	http.SetCookie(w, cookie)
 
 	if r.Method == http.MethodGet {
 		filename := ""
