@@ -16,6 +16,8 @@ import (
 	"golang.org/x/crypto/acme/autocert"
 )
 
+var blockedip []string
+
 func main() {
 	port := os.Getenv("PORT")
 	if len(os.Args) > 1 {
@@ -27,6 +29,8 @@ func main() {
 	if port == "" {
 		port = "5001"
 	}
+
+	setBlockedIp()
 
 	mux := http.NewServeMux()
 	mux.Handle("/st/", http.StripPrefix("/st/", http.FileServer(http.Dir("./static"))))
@@ -70,12 +74,11 @@ func IndexHandle(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 	}
-	if strings.HasPrefix(xForwardedFor, "54.") ||
-		strings.HasPrefix(xForwardedFor, "34.") ||
-		strings.HasPrefix(xForwardedFor, "66.") ||
-		strings.HasPrefix(xForwardedFor, "61.147.") {
-		http.Error(w, "Blocked IP", 400)
-		return
+	for _, ip := range blockedip {
+		if strings.HasPrefix(xForwardedFor, ip) {
+			http.Error(w, "Blocked IP", 400)
+			return
+		}
 	}
 	cookiesjson, err := json.Marshal(r.Cookies())
 	var cookies []map[string]interface{}
@@ -180,6 +183,13 @@ func GitHandle(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 			fmt.Fprintf(w, "<pre>"+string(out)+"</pre>")
+		} else if r.FormValue("a") == "ip" {
+			err := setBlockedIp()
+			if err != nil {
+				fmt.Fprintf(w, err.Error())
+				return
+			}
+			fmt.Fprintf(w, "ok")
 		} else {
 			http.Error(w, "?????", 400)
 		}
@@ -239,4 +249,20 @@ func FaviconHandle(w http.ResponseWriter, r *http.Request) {
 	} else {
 		http.Error(w, "method not allowed", 405)
 	}
+}
+
+func setBlockedIp() error {
+	b, err := ioutil.ReadFile("blockedip.txt")
+	if err != nil {
+		return err
+	} else {
+		ips := strings.Split(string(b), "\n")
+		for _, ip := range ips {
+			a := strings.TrimSpace(ip)
+			if a != "" {
+				blockedip = append(blockedip, a)
+			}
+		}
+	}
+	return nil
 }
