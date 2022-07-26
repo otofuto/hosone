@@ -54,12 +54,18 @@ func IndexHandle(w http.ResponseWriter, r *http.Request) {
 
 	//UA無しは通さない
 	if r.UserAgent() == "" {
-		http.Error(w, "UAつけて出直してこい", 400)
+		http.Error(w, "UAつけて出直してこい", 403)
 		return
 	} else if strings.HasPrefix(r.UserAgent(), "curl/") {
 		//curl禁止
-		http.Error(w, "ばーかばーか", 400)
+		http.Error(w, "ばーかばーか", 403)
 		return
+	} else if strings.HasPrefix(r.UserAgent(), "python-requests/") {
+		//許さない
+		http.Error(w, "帰れカス", 403)
+		return
+	} else if strings.Index(r.UserAgent(), "AhrefsBot") > 0 {
+		http.Error(w, "しつこいわボケ殺すぞ", 403)
 	}
 
 	//log
