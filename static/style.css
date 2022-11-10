@@ -416,12 +416,13 @@ footer a {
 }
 
 #blog article {
-    background-color: #fffa;
+    background-color: #ffffff8c;
     position: relative;
     margin: 5px auto;
     padding: 3px;
     box-sizing: border-box;
     overflow: hidden;
+    backdrop-filter: blur(4px);
 }
 
 #blog article[data-closed] {
@@ -433,6 +434,34 @@ footer a {
     color: white;
     padding: 0 10px;
     font-size: 14px;
+}
+
+#blog article svg {
+    height: 20px;
+}
+
+#blog article label:after {
+    content: 'お気に入り';
+}
+
+.blogfav {
+    width: max-content;
+    margin: 0 0 0 auto;
+    background-color: #fff0;
+    transition: background-color 200ms 0ms ease;
+    padding: 2px 1px;
+    user-select: none;
+}
+
+.blogfav:hover {
+    border-right: solid 1.5px lightgray;
+    border-bottom: solid 1.5px gray;
+    background-color: #fff7;
+}
+
+.blogfav:active {
+    border-right: solid 0.5px gray;
+    border-bottom: solid 0.5px dimgray;
 }
 
 article[data-closed]:before {
