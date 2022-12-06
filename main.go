@@ -68,6 +68,31 @@ func IndexHandle(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "しつこいわボケ殺すぞ", 403)
 	}
 
+	//historyのCookieなしはリダイレクト
+	//Twitterのみ許可(Twitterカードのため)
+	if r.UserAgent() != "Twitterbot/1.0" {
+		hisexist := false
+		for _, c := range r.Cookies() {
+			log.Println(c.Name)
+			if c.Name == "history" {
+				hisexist = true
+			}
+		}
+		if !hisexist {
+			cookie := &http.Cookie{
+				Domain:   r.Host,
+				Name:     "history",
+				Value:    time.Now().Format("2006-01-02 15:04:05"),
+				Path:     "/",
+				HttpOnly: true,
+				MaxAge:   3600 * 24 * 7 * 4,
+			}
+			http.SetCookie(w, cookie)
+			http.Redirect(w, r, "/", 302)
+			return
+		}
+	}
+
 	//log
 	xForwardedFor := r.Header.Get("X-Forwarded-For")
 	if xForwardedFor == "" {
@@ -123,28 +148,6 @@ func IndexHandle(w http.ResponseWriter, r *http.Request) {
 				log.Println(err)
 			}
 		}
-	}
-
-	//historyのCookieなしはリダイレクト
-	hisexist := false
-	for _, c := range r.Cookies() {
-		log.Println(c.Name)
-		if c.Name == "history" {
-			hisexist = true
-		}
-	}
-	if !hisexist {
-		cookie := &http.Cookie{
-			Domain:   r.Host,
-			Name:     "history",
-			Value:    time.Now().Format("2006-01-02 15:04:05"),
-			Path:     "/",
-			HttpOnly: true,
-			MaxAge:   3600 * 24 * 7 * 4,
-		}
-		http.SetCookie(w, cookie)
-		http.Redirect(w, r, "/", 302)
-		return
 	}
 
 	if r.Method == http.MethodGet {
