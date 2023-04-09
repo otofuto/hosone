@@ -30,6 +30,17 @@ func main() {
 		port = "5001"
 	}
 
+	go func() {
+		ticker := time.NewTicker(time.Minute * 5)
+		defer ticker.Stop()
+		for {
+			select {
+			case <-ticker.C:
+				http.Get("https://coin.otft.info/cron.php")
+			}
+		}
+	}()
+
 	setBlockedIp()
 
 	mux := http.NewServeMux()
