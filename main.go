@@ -90,7 +90,7 @@ func IndexHandle(w http.ResponseWriter, r *http.Request) {
 	if r.UserAgent() != "Twitterbot/1.0" {
 		hisexist := false
 		for _, c := range r.Cookies() {
-			log.Println(c.Name)
+			//log.Println(c.Name)
 			if c.Name == "history" {
 				hisexist = true
 			}
@@ -174,7 +174,8 @@ func IndexHandle(w http.ResponseWriter, r *http.Request) {
 			r.URL.Path == "/detail" ||
 			r.URL.Path == "/request" ||
 			r.URL.Path == "/otft" ||
-			r.URL.Path == "/contact" {
+			r.URL.Path == "/contact" ||
+			r.URL.Path == "/nengajo" {
 			filename = "index"
 		} else if r.URL.Path == "/test" {
 			filename = "test"

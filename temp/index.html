@@ -59,6 +59,7 @@
         <main id="request"></main>
         <main id="otft"></main>
         <main id="contact"></main>
+        <main id="nengajo"></main>
         <div style="display: none;" id="svgs">
             <svg viewBox="0 0 24 24"><g><path d="M12 0L15.4 7.7L24 9.2L17.8 15.3L19.2 24L12 19.9L4.8 24L6.2 15.3L0 9.2L8.6 7.7L12 0L12 3.2L9.5 8.9L2.6 10L7.8 14.8L6.7 21.2L12 18L17.3 21.2L16.2 14.8L21.4 10L14.5 8.9L12 3.2 Z"></path></g></svg>
         </div>
@@ -162,6 +163,7 @@
                 fetch('/st/contents/request.html?' + (new Date().toJSON())).then(res => res.text()).then(res => document.getElementById('request').innerHTML = res);
                 fetch('/st/contents/otft.html?' + (new Date().toJSON())).then(res => res.text()).then(res => document.getElementById('otft').innerHTML = res);
                 fetch('/st/contents/contact.html?' + (new Date().toJSON())).then(res => res.text()).then(res => document.getElementById('contact').innerHTML = res);
+                fetch('/st/contents/nengajo.html?' + (new Date().toJSON())).then(res => res.text()).then(res => document.getElementById('nengajo').innerHTML = res);
             };
             window.onscroll = () => {
                 document.documentElement.style.setProperty('--bgtop',
