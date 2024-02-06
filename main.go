@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"hosone/pkg/util"
 	"html/template"
 	"io"
 	"io/ioutil"
@@ -10,6 +11,7 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"strconv"
 	"strings"
 	"time"
 
@@ -53,9 +55,11 @@ func main() {
 	mux.Handle("/st/", http.StripPrefix("/st/", http.FileServer(http.Dir("./static"))))
 	mux.HandleFunc("/", IndexHandle)
 	mux.HandleFunc("/git", GitHandle)
+	mux.HandleFunc("/hook", WebHookHandle)
 	mux.HandleFunc("/materials/", MatHandle)
 	mux.HandleFunc("/favicon.ico", FaviconHandle)
 	log.Println("Listening on port: " + port)
+	log.Println("PID: ", os.Getpid())
 	if port == "443" {
 		log.Println("SSL")
 		if err := http.Serve(autocert.NewListener("hosone.work"), mux); err != nil {
@@ -305,4 +309,36 @@ func setBlockedIp() error {
 		}
 	}
 	return nil
+}
+
+func WebHookHandle(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodPost {
+		out, err := exec.Command("git", "pull").Output()
+		if err != nil {
+			util.Log()
+			log.Println(err)
+			http.Error(w, err.Error(), 500)
+			util.SendMail("のぞみんちょ", "info@otft.info", "【ERROR】git pullに失敗したよ", "細音希のホームページで、GithubからのWebhookによる自動pullが失敗したよ。")
+			return
+		}
+		util.SendMail("のぞみんちょ", "info@otft.info", "git pullに成功したよ", "細音希のホームページで、GithubからのWebhookによる自動pullに成功したよ。<br>"+string(out))
+		fmt.Fprintf(w, "<pre>"+string(out)+"</pre>")
+
+		out2, err := exec.Command("go", "build").Output()
+		if err != nil {
+			util.Log()
+			log.Println(err)
+			http.Error(w, err.Error(), 500)
+			util.SendMail("のぞみんちょ", "info@otft.info", "【ERROR】go buildに失敗したよ", "細音希のホームページで、Goのビルドコマンドに失敗したよ。<br>"+string(out2))
+			return
+		}
+		fmt.Fprintf(w, "<pre>"+string(out2)+"</pre>")
+		content := strconv.Itoa(os.Getpid()) + " ./root/hosone/hosone ssl"
+		err = ioutil.WriteFile("/root/rebuild/link.txt", []byte(content), 0666)
+		if err != nil {
+			util.Log()
+		}
+	} else {
+		http.Error(w, "method not allowed", 405)
+	}
 }
