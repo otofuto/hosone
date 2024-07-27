@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta name="viewport" content="width=device-width">
+        <meta charset="utf-8">
+        <title>アイコンリング合成</title>
+    </head>
+    <body>
+        <h1 style="font-size: 28px;">アイコンリング装着用ページ</h1>
+        <p style="color: tomato;">※ファイルを選択しても、どこかに送信されることはありません。あなたの端末上のみで画像は処理されます。</p>
+        <ol>
+            <li>下のボタンから自分のアイコンを選択します。</li>
+            <li>画像が表示されたら、アイコンリングを選択し直します。</li>
+            <li>「画像を保存」ボタンを押して保存します。</li>
+        </ol>
+        <form name="fm">
+            <input type="file" name="fl1" onchange="viewimage(this)">
+            <input type="button" value="画像を保存" onclick="download()">
+        </form>
+        <div style="transform-origin: top left;" id="pcan">
+            <canvas id="canvas" width="500" height="500"></canvas>
+        </div>
+        <script>
+            document.getElementById('pcan').style.scale = document.body.offsetWidth / 500 < 1 ? document.body.offsetWidth / 500 : 1;
+            window.onresize = () => {
+                document.getElementById('pcan').style.scale = document.body.offsetWidth / 500 < 1 ? document.body.offsetWidth / 500 : 1;
+            };
+
+            canvas = document.getElementById('canvas');
+            function viewimage(inp) {
+                if (inp.files.length == 0) {
+                    return;
+                }
+				let context = canvas.getContext('2d');
+				let reader = new FileReader();
+				reader.onload = event => {
+					let img = new Image();
+					img.onload = () => {
+                        if (img.width < img.height) {
+                            let h = canvas.width / img.width * img.height;
+                            context.drawImage(img, 0, (h - canvas.height) / -2, canvas.width, h);
+                        } else {
+                            let w = canvas.height / img.height * img.width;
+                            context.drawImage(img, (w - canvas.width) / -2, 0, w, canvas.height);
+                        }
+					}
+                    img.src = event.target.result;
+				};
+				reader.readAsDataURL(inp.files[0]);
+            }
+
+            function download() {
+                let a = document.createElement('a');
+                a.href = canvas.toDataURL('image/png');
+                let dt = new Date();
+                a.download = 'marged' + dt.getFullYear() + (dt.getMonth() + 1) + dt.getDate() + '.png';
+                a.click();
+            }
+        </script>
+    </body>
+</html>

@@ -183,6 +183,8 @@ func IndexHandle(w http.ResponseWriter, r *http.Request) {
 			filename = "index"
 		} else if r.URL.Path == "/test" {
 			filename = "test"
+		} else if r.URL.Path == "/iconring" {
+			filename = "iconring"
 		}
 		if filename == "" {
 			Page404(w)
