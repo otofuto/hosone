@@ -54,6 +54,7 @@ func main() {
 	mux := http.NewServeMux()
 	mux.Handle("/st/", http.StripPrefix("/st/", http.FileServer(http.Dir("./static"))))
 	mux.HandleFunc("/", IndexHandle)
+	mux.HandleFunc("/iconring", IconRingHandle)
 	mux.HandleFunc("/git", GitHandle)
 	mux.HandleFunc("/hook", WebHookHandle)
 	mux.HandleFunc("/materials/", MatHandle)
@@ -197,6 +198,45 @@ func IndexHandle(w http.ResponseWriter, r *http.Request) {
 		}
 	} else {
 		http.Error(w, "method not allowed", 405)
+	}
+}
+
+func IconRingHandle(w http.ResponseWriter, r *http.Request) {
+	w.Header().Add("Content-Type", "text/html; charset=utf-8")
+
+	//UA無しは通さない
+	if r.UserAgent() == "" {
+		http.Error(w, "UAつけて出直してこい", 403)
+		return
+	} else if strings.HasPrefix(r.UserAgent(), "curl/") {
+		//curl禁止
+		http.Error(w, "ばーかばーか", 403)
+		return
+	} else if strings.HasPrefix(r.UserAgent(), "python-requests/") {
+		//許さない
+		http.Error(w, "帰れカス", 403)
+		return
+	} else if strings.Index(r.UserAgent(), "AhrefsBot") > 0 {
+		http.Error(w, "しつこいわボケ殺すぞ", 403)
+	}
+
+	xForwardedFor := r.Header.Get("X-Forwarded-For")
+	if xForwardedFor == "" {
+		xForwardedFor = r.RemoteAddr
+	}
+	if xForwardedFor == "" {
+		for k, v := range r.Header {
+			if strings.ToLower(k) == "x-forwarded-for" {
+				xForwardedFor += strings.Join(v, ",")
+			}
+		}
+	}
+	log.Println("iconring access: " + xForwardedFor)
+
+	if err := template.Must(template.ParseFiles("temp/iconring.html")).Execute(w, nil); err != nil {
+		log.Println(err)
+		http.Error(w, "500", 500)
+		return
 	}
 }
 
