@@ -52,7 +52,8 @@
             (() => {
                 btn1.onclick = () => {
                     document.fm.fl1.click();
-                    myicon = true;
+                    if (btn1.innerText == '作業をはじめる')
+                        myicon = true;
                 };
 
                 btn2.onclick = () => download();
@@ -79,10 +80,12 @@
                         }
                         if (myicon) {
                             alert('次にアイコンリングを選択してください');
+                            btn1.innerText = 'アイコンリングを選択する';
                             document.fm.fl1.click();
                             myicon = false;
                         } else {
                             btn2.removeAttribute('style');
+                            btn1.innerText = '作業をはじめる';
                             alert('「画像を保存」ボタンで保存してください');
                             btn2.scrollIntoView();
                         }
