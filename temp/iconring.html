@@ -4,27 +4,61 @@
         <meta name="viewport" content="width=device-width">
         <meta charset="utf-8">
         <title>アイコンリング合成</title>
+        <style>
+            #btn1 {
+                display: block;
+                border: solid 1px rgb(252, 224, 181);
+                background-color: blanchedalmond;
+                width: 120px;
+                height: 80px;
+                margin: 0 auto;
+                max-width: 60vw;
+            }
+            #btn2 {
+                display: block;
+                border: solid 1px rgb(124, 238, 124);
+                background-color: lightgreen;
+                width: 120px;
+                height: 80px;
+                margin: 0 auto;
+                max-width: 60vw;
+            }
+        </style>
     </head>
     <body>
         <h1 style="font-size: 28px;">アイコンリング装着用ページ</h1>
-        <p style="color: tomato;">※ファイルを選択しても、どこかに送信されることはありません。あなたの端末上のみで画像は処理されます。</p>
+        <p style="color: tomato;">※ファイルを選択しても、どこかに送信されることはありません。あなたの端末上のみで画像処理されます。</p>
         <ol>
-            <li>下のボタンから自分のアイコンを選択します。</li>
-            <li>画像が表示されたら、アイコンリングを選択し直します。</li>
+            <li>下の「はじめる」ボタンを押してください。</li>
+            <li>自分のアイコン画像を選択します。</li>
+            <li>次にアイコンリングを選択します。</li>
             <li>「画像を保存」ボタンを押して保存します。</li>
         </ol>
+        <button id="btn1">作業をはじめる</button>
         <form name="fm">
-            <input type="file" name="fl1" onchange="viewimage(this)">
-            <input type="button" value="画像を保存" onclick="download()">
+            <input type="file" name="fl1" onchange="viewimage(this)" style="display: none;">
         </form>
         <div style="transform-origin: top left;" id="pcan">
             <canvas id="canvas" width="500" height="500"></canvas>
         </div>
+        <button id="btn2" style="display: none;">画像を保存</button>
+        <div style="height: 300px;"></div>
         <script>
             document.getElementById('pcan').style.scale = document.body.offsetWidth / 500 < 1 ? document.body.offsetWidth / 500 : 1;
             window.onresize = () => {
                 document.getElementById('pcan').style.scale = document.body.offsetWidth / 500 < 1 ? document.body.offsetWidth / 500 : 1;
             };
+
+            (() => {
+                btn1.onclick = () => {
+                    document.fm.fl1.click();
+                    myicon = true;
+                };
+
+                btn2.onclick = () => download();
+            })();
+
+            let myicon = true;
 
             canvas = document.getElementById('canvas');
             function viewimage(inp) {
@@ -42,6 +76,15 @@
                         } else {
                             let w = canvas.height / img.height * img.width;
                             context.drawImage(img, (w - canvas.width) / -2, 0, w, canvas.height);
+                        }
+                        if (myicon) {
+                            alert('次にアイコンリングを選択してください');
+                            document.fm.fl1.click();
+                            myicon = false;
+                        } else {
+                            btn2.removeAttribute('style');
+                            alert('「画像を保存」ボタンで保存してください');
+                            btn2.scrollIntoView();
                         }
 					}
                     img.src = event.target.result;
