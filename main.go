@@ -41,7 +41,7 @@ func main() {
 			case <-ticker.C:
 				http.Get("https://coin.otft.info/cron.php")
 				count++
-				if count == 6 {
+				if count == 4 {
 					count = 0
 					http.Get("https://filedl.intel.tokyo/insertdb")
 				}
