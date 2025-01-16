@@ -15,12 +15,25 @@ import (
 	"strings"
 	"time"
 
+	"github.com/joho/godotenv"
 	"golang.org/x/crypto/acme/autocert"
 )
 
 var blockedip []string
 
+type Notif struct {
+	UserId    string
+	CloseTime time.Time
+}
+
+var sentNotifs []Notif
+
 func main() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Println(err)
+	}
+
 	port := os.Getenv("PORT")
 	if len(os.Args) > 1 {
 		port = os.Args[1]
@@ -31,6 +44,9 @@ func main() {
 	if port == "" {
 		port = "5001"
 	}
+
+	time.Local = time.FixedZone("Asia/Tokyo", 9*60*60)
+	sentNotifs = make([]Notif, 0)
 
 	go func() {
 		ticker := time.NewTicker(time.Minute * 5)
@@ -45,9 +61,17 @@ func main() {
 					count = 0
 					http.Get("https://filedl.intel.tokyo/insertdb")
 				}
+				for _, nt := range sentNotifs {
+					if nt.CloseTime.Unix() < time.Now().Unix() {
+						CheckOtobananaLive("9d643ddb-a0e9-4556-a831-489db02bfa5d") //転寝
+					}
+				}
 			}
 		}
 	}()
+
+	CheckOtobananaLive("9d643ddb-a0e9-4556-a831-489db02bfa5d") //転寝
+	CheckOtobananaLive("cc583040-28c5-4385-8275-eb5d8cdb8507") //せな
 
 	setBlockedIp()
 
@@ -382,5 +406,83 @@ func WebHookHandle(w http.ResponseWriter, r *http.Request) {
 		}
 	} else {
 		http.Error(w, "method not allowed", 405)
+	}
+}
+
+func CheckOtobananaLive(user_id string) {
+	req, err := http.NewRequest(http.MethodGet, "https://api.v2.otobanana.com/api/users/"+user_id+"/onair", nil)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	req.Header.Add("Authority", "otobanana.com")
+	req.Header.Add("Accept", "application/json, text/plain, */*")
+	req.Header.Add("Accept-Language", "ja,en-US;q=0.9,en;q=0.8")
+	req.Header.Add("Cache-Control", "no-cache")
+	req.Header.Add("Pragma", "no-cache")
+	req.Header.Add("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36")
+	cli := http.Client{}
+	res, err := cli.Do(req)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	body, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	defer res.Body.Close()
+	type Onair struct {
+		Post struct {
+			Id   string `json:"id"`
+			User struct {
+				Name string `json:"name"`
+			} `json:"user"`
+			Title string `json:"title"`
+		} `json:"post"`
+		RoomOpenAt  string `json:"room_open_at"`
+		RoomCloseAt string `json:"room_close_at"`
+	}
+	var onair Onair
+	err = json.Unmarshal(body, &onair)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	opentime, err := time.Parse("2006-01-02T15:04:05.000000Z", onair.RoomOpenAt)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	closetime, err := time.Parse("2006-01-02T15:04:05.000000Z", onair.RoomCloseAt)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	if time.Now().Unix() < closetime.Unix() {
+		//fmt.Println(onair.Post.User.Name, "現在配信中", opentime.Local().Format("1月 2日 15時 4分"))
+		liveUrl := "https://otobanana.com/deep/livestream/" + onair.Post.Id
+		err = util.SendMail("れお", "sex@otft.info", onair.Post.User.Name+"さんが配信をはじめました", "<h2>"+onair.Post.User.Name+"さんが配信をはじめました</h2><p>タイトル: <span style=\"font-weight: bold\">"+onair.Post.Title+"</span></p><p>"+opentime.Local().Format("1月 2日 15時 4分")+" から "+closetime.Local().Format("1月 2日 15時 4分")+"</p><p><a href=\""+liveUrl+"\">"+liveUrl+"</a></p><p><br><br>hosone.work</p>")
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		updated := false
+		for i := 0; i < len(sentNotifs); i++ {
+			if sentNotifs[i].UserId == user_id {
+				sentNotifs[i].CloseTime = closetime
+				updated = true
+				break
+			}
+		}
+		if !updated {
+			sentNotifs = append(sentNotifs, Notif{
+				UserId:    user_id,
+				CloseTime: closetime,
+			})
+		}
 	}
 }
