@@ -4,15 +4,14 @@ import (
 	"bytes"
 	"encoding/base64"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"log"
 	"math/rand"
 	"net/http"
 	"net/smtp"
 	"os"
-	"os/exec"
 	"runtime"
+	"strconv"
 	"strings"
 	"time"
 
@@ -216,6 +215,15 @@ func Contains(arr []string, target string) bool {
 	return false
 }
 
+func StringIndexOf(arr []string, target string) int {
+	for i, s := range arr {
+		if s == target {
+			return i
+		}
+	}
+	return -1
+}
+
 func ContainsInt(arr []int, target int) bool {
 	for _, i := range arr {
 		if i == target {
@@ -223,6 +231,45 @@ func ContainsInt(arr []int, target int) bool {
 		}
 	}
 	return false
+}
+
+func Log() {
+	pc, pwd, line, _ := runtime.Caller(1)
+	log.Println(pwd[strings.Index(pwd, os.Getenv("PROJECT")+"/")+len(os.Getenv("PROJECT")):], line, runtime.FuncForPC(pc).Name())
+}
+
+func OutHandle(w http.ResponseWriter, r *http.Request) {
+	w.Header().Add("Content-Type", "text/html; charset=utf8")
+	b, err := ioutil.ReadFile("nohup.out")
+	if err != nil {
+		w.Header().Set("Content-Type", "text/html; charset=utf8")
+		Page404(w)
+		return
+	}
+	lines := strings.Split(string(b), "\n")
+	allline := len(lines)
+	ret := make([]string, 0)
+	tlen := len("2024/01/28 17:08:01 ")
+	for ; len(lines) > 0; lines = lines[1:] {
+		if strings.TrimSpace(lines[0]) == "" {
+			continue
+		}
+		if lines[0][:2] == "20" {
+			if strings.HasPrefix(lines[0][tlen:], "http: ") || strings.HasPrefix(lines[0][tlen:], "net/http: ") {
+				continue
+			}
+			ret = append(ret, "<div><time>"+lines[0][:tlen]+"</time><span>"+lines[0][tlen:]+"</span></div>")
+		} else if len(lines[0]) > len("panic: ") {
+			if lines[0][:len("panic: ")] == "panic: " {
+				ret = append(ret, "<div style=\"color: red\"><time>"+lines[0][:len("panic: ")]+"</time><span>"+lines[0][len("panic: "):]+"</span></div>")
+			} else {
+				ret = append(ret, "<div class=\"pre\">"+lines[0]+"</div>")
+			}
+		} else {
+			ret = append(ret, "<div class=\"pre\">"+lines[0]+"</div>")
+		}
+	}
+	fmt.Fprintf(w, "<head><style>time {color: gray;} div {font-size: 13px;} div:hover {background-color: aliceblue;} .pre {padding-left: 60px;}</style></head><body><h4>nohup.out</h4><p>全行数: "+strconv.Itoa(allline)+"</p><p>表示行数: "+strconv.Itoa(len(ret))+"</p>"+strings.Join(ret, "\n")+"</body>")
 }
 
 func Page404(w http.ResponseWriter) {
@@ -247,40 +294,4 @@ func Page500(w http.ResponseWriter, msg string) {
 	str := string(b)
 	str = strings.Replace(str, "[message]", msg, -1)
 	fmt.Fprintf(w, str)
-}
-
-func FaviconHandle(w http.ResponseWriter, r *http.Request) {
-	if r.Method == http.MethodGet {
-		w.Header().Add("Content-Type", "image/vnd.microsoft.icon")
-		f, err := os.Open("static/favicon.ico")
-		if err != nil {
-			http.Error(w, err.Error(), 500)
-			return
-		}
-		defer f.Close()
-		io.Copy(w, f)
-	} else {
-		http.Error(w, "method not allowed", 405)
-	}
-}
-
-func WebHookHandle(w http.ResponseWriter, r *http.Request) {
-	if r.Method == http.MethodPost {
-		out, err := exec.Command("git", "pull").Output()
-		if err != nil {
-			log.Println(err)
-			http.Error(w, err.Error(), 500)
-			SendMail("のぞみんちょ", "info@otft.info", "【ERROR】git pullに失敗したよ", os.Getenv("DOMAIN")+"のシステムで、GithubからのWebhookによる自動pullが失敗したよ。")
-			return
-		}
-		SendMail("のぞみんちょ", "info@otft.info", "git pullに成功したよ", os.Getenv("DOMAIN")+"のシステムで、GithubからのWebhookによる自動pullに成功したよ。<br><pre>"+string(out)+"</pre>")
-		fmt.Fprintf(w, "<pre>"+string(out)+"</pre>")
-	} else {
-		http.Error(w, "method not allowed", 405)
-	}
-}
-
-func Log() {
-	pc, pwd, line, _ := runtime.Caller(1)
-	log.Println(pwd[strings.Index(pwd, os.Getenv("PROJECT")+"/")+len(os.Getenv("PROJECT")):], line, runtime.FuncForPC(pc).Name())
 }

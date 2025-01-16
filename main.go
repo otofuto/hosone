@@ -70,8 +70,8 @@ func main() {
 		}
 	}()
 
-	CheckOtobananaLive("9d643ddb-a0e9-4556-a831-489db02bfa5d") //転寝
-	CheckOtobananaLive("cc583040-28c5-4385-8275-eb5d8cdb8507") //せな
+	//CheckOtobananaLive("9d643ddb-a0e9-4556-a831-489db02bfa5d") //転寝
+	//CheckOtobananaLive("cc583040-28c5-4385-8275-eb5d8cdb8507") //せな
 
 	setBlockedIp()
 
@@ -83,6 +83,7 @@ func main() {
 	mux.HandleFunc("/hook", WebHookHandle)
 	mux.HandleFunc("/materials/", MatHandle)
 	mux.HandleFunc("/favicon.ico", FaviconHandle)
+	mux.HandleFunc("/nohup.out", util.OutHandle)
 	log.Println("Listening on port: " + port)
 	log.Println("PID: ", os.Getpid())
 	if port == "443" {
