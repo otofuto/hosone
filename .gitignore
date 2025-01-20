@@ -2,3 +2,4 @@ documents
 .DS_Store
 static/log.json
 .env
+nohup.out

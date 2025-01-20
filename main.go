@@ -464,7 +464,7 @@ func CheckOtobananaLive(user_id string) {
 	}
 
 	if time.Now().Unix() < closetime.Unix() {
-		//fmt.Println(onair.Post.User.Name, "現在配信中", opentime.Local().Format("1月 2日 15時 4分"))
+		fmt.Println(onair.Post.User.Name, "現在配信中", opentime.Local().Format("1月 2日 15時 4分"))
 		liveUrl := "https://otobanana.com/deep/livestream/" + onair.Post.Id
 		err = util.SendMail("れお", "sex@otft.info", onair.Post.User.Name+"さんが配信をはじめました", "<h2>"+onair.Post.User.Name+"さんが配信をはじめました</h2><p>タイトル: <span style=\"font-weight: bold\">"+onair.Post.Title+"</span></p><p>"+opentime.Local().Format("1月 2日 15時 4分")+" から "+closetime.Local().Format("1月 2日 15時 4分")+"</p><p><a href=\""+liveUrl+"\">"+liveUrl+"</a></p><p><br><br>hosone.work</p>")
 		if err != nil {
