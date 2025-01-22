@@ -70,7 +70,7 @@ func main() {
 		}
 	}()
 
-	//CheckOtobananaLive("9d643ddb-a0e9-4556-a831-489db02bfa5d") //転寝
+	CheckOtobananaLive("9d643ddb-a0e9-4556-a831-489db02bfa5d") //転寝
 	//CheckOtobananaLive("cc583040-28c5-4385-8275-eb5d8cdb8507") //せな
 
 	setBlockedIp()
@@ -480,6 +480,20 @@ func CheckOtobananaLive(user_id string) {
 			}
 		}
 		if !updated {
+			sentNotifs = append(sentNotifs, Notif{
+				UserId:    user_id,
+				CloseTime: closetime,
+			})
+		}
+	} else {
+		contains := false
+		for _, nt := range sentNotifs {
+			if nt.UserId == user_id {
+				contains = true
+				break
+			}
+		}
+		if !contains {
 			sentNotifs = append(sentNotifs, Notif{
 				UserId:    user_id,
 				CloseTime: closetime,
