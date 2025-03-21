@@ -72,14 +72,15 @@ func main() {
 				// 毎朝8時に実行
 				now := time.Now()
 				if now.Hour() == 8 && now.Minute() < 5 {
-					sendOukaMail()
+					sendOukaMail("k.nishi@ekius.jp")
+					sendOukaMail("matsuda@ekius.jp")
+					sendOukaMail("eguchi@ekius.jp")
 				}
 			}
 		}
 	}()
 
 	CheckOtobananaLive("9d643ddb-a0e9-4556-a831-489db02bfa5d") //転寝
-	//CheckOtobananaLive("cc583040-28c5-4385-8275-eb5d8cdb8507") //せな
 
 	setBlockedIp()
 
@@ -510,96 +511,150 @@ func CheckOtobananaLive(user_id string) {
 	}
 }
 
-func sendOukaMail() {
+func sendOukaMail(to_address string) {
 	daycount := 0
 	daycount = 1756652400 - int(time.Now().Unix())
 	daycount /= 86400
-	to_address := "k.nishi@ekius.jp"
 	auth := smtp.PlainAuth("", os.Getenv("MAIL_ADDRESS"), os.Getenv("MAIL_PASS"), os.Getenv("MAIL_SERVER"))
+	bodyhtml := `<!DOCTYPE html>
+		<html>
+		<head>
+			<meta charset="UTF-8">
+			<title>緊急通知</title>
+			<style>
+				body {
+					font-family: Arial, sans-serif;
+					text-align: center;
+					background-color: black;
+					color: white;
+					padding: 20px;
+				}
+				.container {
+					margin: 20px auto;
+					padding: 20px;
+					border: 5px solid white;
+					max-width: 600px;
+					background-color: black;
+				}
+				.countdown {
+					font-size: 48px;
+					font-weight: bold;
+					padding: 20px;
+					background-color: red;
+					color: white;
+					border: 5px solid yellow;
+				}
+				.message {
+					font-size: 24px;
+					font-weight: bold;
+					margin-top: 20px;
+					background-color: white;
+					color: red;
+					padding: 20px;
+					border: 5px solid red;
+					text-align: left;
+				}
+				.urgent {
+					font-size: 20px;
+					font-weight: bold;
+					background-color: yellow;
+					color: black;
+					padding: 15px;
+					border: 3px solid black;
+					display: inline-block;
+					margin-top: 20px;
+				}
+				.big {
+					font-size: 28px;
+					font-weight: bold;
+				}
+			</style>
+		</head>
+		<body>
+			` + strings.ReplaceAll(mailbody(daycount), "daycount", strconv.Itoa(daycount)) + `
+		</body>
+		</html>
+		`
 	msg := []byte("" +
 		"From: 桜楓アラート事務局<info@otft.info>\r\n" +
-		"To: 西 昴樹、お前だよお前<" + to_address + ">\r\n" +
+		"To: お前だよお前、見てんだろ<" + to_address + ">\r\n" +
 		encodeHeader("Subject", "おはようございます") +
 		"MIME-Version: 1.0\r\n" +
 		"Content-Type: text/html; charset=\"utf-8\"\r\n" +
 		"Content-Transfer-Encoding: base64\r\n" +
 		"\r\n" +
-		encodeBody(`<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>緊急通知</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            background-color: black;
-            color: white;
-            padding: 20px;
-        }
-        .container {
-            margin: 20px auto;
-            padding: 20px;
-            border: 5px solid white;
-            max-width: 600px;
-            background-color: black;
-        }
-        .countdown {
-            font-size: 48px;
-            font-weight: bold;
-            padding: 20px;
-            background-color: red;
-            color: white;
-            border: 5px solid yellow;
-        }
-        .message {
-            font-size: 24px;
-            font-weight: bold;
-            margin-top: 20px;
-            background-color: white;
-            color: red;
-            padding: 20px;
-            border: 5px solid red;
-            text-align: left;
-        }
-        .urgent {
-            font-size: 20px;
-            font-weight: bold;
-            background-color: yellow;
-            color: black;
-            padding: 15px;
-            border: 3px solid black;
-            display: inline-block;
-            margin-top: 20px;
-        }
-        .big {
-            font-size: 28px;
-            font-weight: bold;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="countdown">🚨 システム開発部がなくなるまであと `+strconv.Itoa(daycount)+` 日 🚨</div>
-        <div class="message">
-            <p class="big">システム開発部の運命が決まるまで、あと <strong>`+strconv.Itoa(daycount)+`日</strong>！</p>
-            <p>`+strconv.Itoa(daycount)+`日後、君たちは笑っているか？それとも…職を失っているか？</p>
-            <p>いいか、`+strconv.Itoa(daycount)+`日は長いようで短い！この一日一日が勝負だ！</p>
-            <p><strong>`+strconv.Itoa(daycount)+`日後に「やるんじゃなかった」と後悔するな！</strong></p>
-            <p>成果を出せ！とにかく動け！`+strconv.Itoa(daycount)+`日間、死ぬ気でやれ！</p>
-            <p class="big">「やるか、やらないか」じゃない！<br>`+strconv.Itoa(daycount)+`日間、やるしかないんだ！！🔥</p>
-        </div>
-        <div class="urgent">⚠️ 残り `+strconv.Itoa(daycount)+` 日！覚悟を決めろ！⚠️</div>
-    </div>
-</body>
-</html>
-`) +
+		encodeBody(bodyhtml) +
 		"\r\n")
 
 	err := smtp.SendMail(os.Getenv("MAIL_SERVER")+":"+os.Getenv("MAIL_PORT"), auth, os.Getenv("MAIL_ADDRESS"), []string{to_address}, msg)
 	if err != nil {
 		util.Log()
 		log.Println(err)
+	}
+}
+
+func mailbody(daycount int) string {
+	if daycount > 150 {
+		return `<div class="container">
+				<div class="countdown">🚨 システム開発部がなくなるまであと daycount 日 🚨</div>
+				<div class="message">
+					<p class="big">システム開発部の運命が決まるまで、あと <strong>daycount日</strong>！</p>
+					<p>daycount日後、君たちは笑っているか？それとも…職を失っているか？</p>
+					<p>いいか、daycount日は長いようで短い！この一日一日が勝負だ！</p>
+					<p><strong>daycount日後に「やるんじゃなかった」と後悔するな！</strong></p>
+					<p>成果を出せ！とにかく動け！daycount日間、死ぬ気でやれ！</p>
+					<p class="big">「やるか、やらないか」じゃない！<br>daycount日間、やるしかないんだ！！🔥</p>
+				</div>
+				<div class="urgent">⚠️ 残り daycount 日！覚悟を決めろ！⚠️</div>
+			</div>`
+	} else if daycount > 100 {
+		return `<div class="container">
+				<div class="countdown">⚡️ システム開発部が消滅するまであと daycount 日 ⚡️</div>
+				<div class="message">
+					<p class="big">daycount日… もう言い訳している時間はない！</p>
+					<p>daycount日後、成果がなければ、システム開発部は消える！</p>
+					<p>「まだdaycount日もある」と思うな！<strong>daycount日しかない！</strong></p>
+					<p>チャンスを掴むか、逃すか——それはdaycount日の間に決まる！</p>
+					<p class="big">仕事を取れ！行動しろ！<br>daycount日間、本気でやり切れ！🔥</p>
+				</div>
+				<div class="urgent">💥 あと daycount 日…<strong>攻めの姿勢で挑め！</strong> 💥</div>
+			</div>`
+	} else if daycount > 50 {
+		return `<div class="container">
+				<div class="countdown">⏰ システム開発部が消滅するまであと daycount 日 ⏰</div>
+				<div class="message">
+					<p class="big">daycount日… もう待ったなしだ！</p>
+					<p>daycount日後、笑えるか？泣くか？<strong>運命は君の手にある！</strong></p>
+					<p>このdaycount日、<strong>1日たりともムダにするな！</strong></p>
+					<p>「やるしかない」と言ったはずだ！ならば、やれ！</p>
+					<p class="big">今、全力で動け！仕事を取れ！daycount日で未来を変えろ！🔥</p>
+				</div>
+				<div class="urgent">⚡️ あと daycount 日！<strong>攻めの姿勢を崩すな！</strong> ⚡️</div>
+			</div>`
+	} else if daycount > 7 {
+		return `<div class="container">
+				<div class="countdown">🚨 システム開発部が消滅するまであと daycount 日 🚨</div>
+				<div class="message">
+					<p class="big">daycount日… <strong>最後のチャンスだ！</strong></p>
+					<p>あとdaycount日、結果を出さなければ、すべてが終わる！</p>
+					<p><strong>daycount日後、システム開発部は存在しているのか？</strong></p>
+					<p>「ギリギリでどうにかなる」と思うな！<strong>ギリギリでは遅い！</strong></p>
+					<p class="big">このdaycount日間で、<strong>全てを変えろ！</strong>🔥</p>
+				</div>
+				<div class="urgent">💀 あと daycount 日… <strong>生き残るために戦え！</strong> 💀</div>
+			</div>`
+	} else {
+		return `<div class="container">
+				<div class="countdown">🕖 システム開発部が消滅するまであと daycount 日 🕖</div>
+				<div class="message">
+					<p class="big">おーい、<strong>生きてるか！？</strong>😨</p>
+					<p>あと<strong>daycount日</strong>だぞ…？冗談じゃない、本当に消えるぞ…？</p>
+					<p>「最後の1週間で巻き返せばいい」なんて思ってないよな？</p>
+					<p><strong>daycount日間、全力で戦える覚悟はあるのか！？</strong></p>
+					<p class="big">これがラストチャンスだ！<br>結果を残せ！仕事を取れ！🔥</p>
+				</div>
+				<div class="urgent">💀 あと daycount 日… <strong>本当に大丈夫か！？</strong> 💀</div>
+			</div>`
 	}
 }
 
