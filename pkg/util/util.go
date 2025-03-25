@@ -89,7 +89,7 @@ func encodeBody(body string) string {
 	return b2.String()
 }
 
-//GETでは使えない
+// GETでは使えない
 func Isset(r *http.Request, keys []string) bool {
 	for _, v := range keys {
 		exist := false
@@ -144,6 +144,21 @@ func CheckRequest(w http.ResponseWriter, r *http.Request) bool {
 	return true
 }
 
+func IP(r *http.Request) string {
+	xForwardedFor := r.Header.Get("X-Forwarded-For")
+	if xForwardedFor == "" {
+		xForwardedFor = r.RemoteAddr
+	}
+	if xForwardedFor == "" {
+		for k, v := range r.Header {
+			if strings.ToLower(k) == "x-forwarded-for" {
+				xForwardedFor += strings.Join(v, ",")
+			}
+		}
+	}
+	return xForwardedFor
+}
+
 func PassHash(pass string) string {
 	hash, err := bcrypt.GenerateFromPassword([]byte(pass), 10)
 	if err != nil {
@@ -171,37 +186,37 @@ func GetDomain(r *http.Request) string {
 	return domain
 }
 
-//数値かどうか(ドットとカンマを含む)
+// 数値かどうか(ドットとカンマを含む)
 func IsNumber(r rune) bool {
 	return (48 <= r && r <= 57) || r == 44 || r == 46
 }
 
-//整数がどうか
+// 整数がどうか
 func IsInt(r rune) bool {
 	return (48 <= r && r <= 57)
 }
 
-//ひらがなかどうか
+// ひらがなかどうか
 func IsHiragana(r rune) bool {
 	return (12353 <= r && r < 12441) || (12444 < r && r <= 12446)
 }
 
-//カタカナかどうか
+// カタカナかどうか
 func IsKatakana(r rune) bool {
 	return 12449 <= r && r <= 12538
 }
 
-//濁点など
+// 濁点など
 func IsHirakata(r rune) bool {
 	return r == 12540 || (12441 <= r && r <= 12444)
 }
 
-//漢字かどうか
+// 漢字かどうか
 func IsKanji(r rune) bool {
 	return (19968 <= r && r <= 40879) || r == 12293
 }
 
-//アルファベットかどうか(アンダーバーを含む)
+// アルファベットかどうか(アンダーバーを含む)
 func IsAlphabet(r rune) bool {
 	return (65 <= r && r <= 90) || (97 <= r && r <= 122) || r == 95
 }
@@ -250,6 +265,7 @@ func OutHandle(w http.ResponseWriter, r *http.Request) {
 	allline := len(lines)
 	ret := make([]string, 0)
 	tlen := len("2024/01/28 17:08:01 ")
+	lastTime := ""
 	for ; len(lines) > 0; lines = lines[1:] {
 		if strings.TrimSpace(lines[0]) == "" {
 			continue
@@ -258,7 +274,15 @@ func OutHandle(w http.ResponseWriter, r *http.Request) {
 			if strings.HasPrefix(lines[0][tlen:], "http: ") || strings.HasPrefix(lines[0][tlen:], "net/http: ") {
 				continue
 			}
-			ret = append(ret, "<div><time>"+lines[0][:tlen]+"</time><span>"+lines[0][tlen:]+"</span></div>")
+			tm := lines[0][:tlen]
+			if tm == lastTime {
+				tm = ""
+			}
+			if strings.HasPrefix(lines[0][tlen:], "[JS] ") {
+				ret = append(ret, "<div><time>"+tm+"</time><span class=\"js\">"+lines[0][tlen:]+"</span></div>")
+			}
+			ret = append(ret, "<div><time>"+tm+"</time><span>"+lines[0][tlen:]+"</span></div>")
+			lastTime = lines[0][:tlen]
 		} else if len(lines[0]) > len("panic: ") {
 			if lines[0][:len("panic: ")] == "panic: " {
 				ret = append(ret, "<div style=\"color: red\"><time>"+lines[0][:len("panic: ")]+"</time><span>"+lines[0][len("panic: "):]+"</span></div>")
@@ -269,7 +293,37 @@ func OutHandle(w http.ResponseWriter, r *http.Request) {
 			ret = append(ret, "<div class=\"pre\">"+lines[0]+"</div>")
 		}
 	}
-	fmt.Fprintf(w, "<head><style>time {color: gray;} div {font-size: 13px;} div:hover {background-color: aliceblue;} .pre {padding-left: 60px;}</style></head><body><h4>nohup.out</h4><p>全行数: "+strconv.Itoa(allline)+"</p><p>表示行数: "+strconv.Itoa(len(ret))+"</p>"+strings.Join(ret, "\n")+"</body>")
+	fmt.Fprintf(w, `<head><style>
+		time {
+			color: gray;
+			display: inline-block;
+			width: 150px;
+			min-width: 150px;
+		}
+		div {
+			display: flex;
+			font-size: 13px;
+			line-break: loose;
+    		overflow-wrap: anywhere;
+		}
+		div:not(.pre):hover {
+			background-color: aliceblue;
+		}
+		div.pre:hover {
+			background-color: black;
+		}
+		.pre {
+			padding-left: 40px;
+			color: white;
+			background-color: darkslategray;
+		}
+		.js {
+			color: royalblue;
+		}
+		span {
+			display: inline-block;
+		}
+	</style></head><body><h4>nohup.out</h4><p>全行数: `+strconv.Itoa(allline)+"</p><p>表示行数: "+strconv.Itoa(len(ret))+"</p>"+strings.Join(ret, "\n")+"<script>document.querySelector('div:has(time):last-of-type').scrollIntoView()</script></body>")
 }
 
 func Page404(w http.ResponseWriter) {
@@ -294,4 +348,20 @@ func Page500(w http.ResponseWriter, msg string) {
 	str := string(b)
 	str = strings.Replace(str, "[message]", msg, -1)
 	fmt.Fprintf(w, str)
+}
+
+func NohupHandle(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodPost {
+		r.ParseMultipartForm(32 << 20)
+
+		if r.FormValue("error") != "" {
+			log.Println("[JS] " + r.FormValue("error"))
+			fmt.Println(IP(r) + " " + r.Referer())
+			fmt.Fprintf(w, "{\"result\": true}")
+		} else {
+			http.Error(w, "errorを送ってください", 400)
+		}
+	} else {
+		http.Error(w, "Method Not Allowed.", 405)
+	}
 }

@@ -168,6 +168,10 @@ func IndexHandle(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	cookiesjson, err := json.Marshal(r.Cookies())
+	if err != nil {
+		util.Log()
+		log.Println(err)
+	}
 	var cookies []map[string]interface{}
 	err = json.Unmarshal(cookiesjson, &cookies)
 	if err != nil {
@@ -281,7 +285,7 @@ func Page404(w http.ResponseWriter) {
 		b = []byte("404 Page Not Found")
 	}
 	w.WriteHeader(404)
-	fmt.Fprintf(w, string(b))
+	fmt.Fprint(w, string(b))
 }
 
 func GitHandle(w http.ResponseWriter, r *http.Request) {
@@ -302,11 +306,11 @@ func GitHandle(w http.ResponseWriter, r *http.Request) {
 				http.Error(w, err.Error(), 500)
 				return
 			}
-			fmt.Fprintf(w, "<pre>"+string(out)+"</pre>")
+			fmt.Fprint(w, "<pre>"+string(out)+"</pre>")
 		} else if r.FormValue("a") == "ip" {
 			err := setBlockedIp()
 			if err != nil {
-				fmt.Fprintf(w, err.Error())
+				fmt.Fprint(w, err.Error())
 				return
 			}
 			fmt.Fprintf(w, "ok")
@@ -325,7 +329,7 @@ func MatHandle(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		filename := r.URL.Path[len("/materials/"):]
-		if strings.Index(r.Header.Get("Accept"), "image/webp") >= 0 {
+		if strings.Contains(r.Header.Get("Accept"), "image/webp") {
 			if strings.Index(filename, ".") > 0 {
 				filename = filename[:strings.LastIndex(filename, ".")]
 			}
@@ -437,7 +441,7 @@ func CheckOtobananaLive(user_id string) {
 		log.Println(err)
 		return
 	}
-	body, err := ioutil.ReadAll(res.Body)
+	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		log.Println(err)
 		return
