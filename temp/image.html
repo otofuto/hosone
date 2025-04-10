@@ -60,7 +60,7 @@
 
             function sendFile(e) {
                 e.preventDefault();
-                if (inp.files.length == 0) return;
+                if (document.fm.image.files.length == 0) return;
                 put('/image', new FormData(document.fm)).then(res => {
                     document.fm.image.value = null;
                     alert(res.message);
