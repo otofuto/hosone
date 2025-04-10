@@ -21,6 +21,10 @@
                 border-radius: 0.25rem;
                 box-shadow: 0 0 5px -2px black;
             }
+            #preview {
+                max-width: 100%;
+                max-height: 300px;
+            }
             #images img {
                 max-width: calc(100% - 2rem);
                 max-height: calc(100dvh - 2rem);
@@ -32,7 +36,8 @@
     <body>
         <form name="fm" onsubmit="sendFile(event);">
             <input type="hidden" name="pw" value="myporncollections">
-            <input type="file" name="image">
+            <input type="file" name="image" onchange="viewImage(this)">
+            <img id="preview">
             <button>Send</button>
         </form>
         <div id="buttons_area">
@@ -40,8 +45,22 @@
         </div>
         <div id="images"></div>
         <script>
+            function viewImage(inp) {
+                if (inp.files.length == 0) {
+                    document.getElementById('preview').src = '';
+                    document.getElementById('preview').style.display = 'none';
+                } else {
+                    const reader = new FileReader();
+                    reader.addEventListener('load', () => {
+                        document.getElementById('preview').src = reader.result;
+                    }, false);
+                    reader.readAsDataURL(inp.files[0]);
+                }
+            }
+
             function sendFile(e) {
                 e.preventDefault();
+                if (inp.files.length == 0) return;
                 put('/image', new FormData(document.fm)).then(res => {
                     document.fm.image.value = null;
                     alert(res.message);
