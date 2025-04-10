@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1">
+        <title>Images</title>
+        <script src="/st/master.js"></script>
+        <style>
+            body {
+                margin: 1rem;
+                padding: 0;
+                font-size: 16px;
+                background-color: whitesmoke;
+            }
+            form, #buttons_area {
+                display: inline-block;
+                padding: 0.5rem;
+                background-color: white;
+                box-sizing: border-box;
+                margin: 0.6rem;
+                border-radius: 0.25rem;
+                box-shadow: 0 0 5px -2px black;
+            }
+            #images img {
+                max-width: calc(100% - 2rem);
+                max-height: calc(100dvh - 2rem);
+                margin: 1rem;
+                box-shadow: 0 0 7px -4px black;
+            }
+        </style>
+    </head>
+    <body>
+        <form name="fm" onsubmit="sendFile(event);">
+            <input type="hidden" name="pw" value="myporncollections">
+            <input type="file" name="image">
+            <button>Send</button>
+        </form>
+        <div id="buttons_area">
+            <button onclick="getImageList()">Get images</button>
+        </div>
+        <div id="images"></div>
+        <script>
+            function sendFile(e) {
+                e.preventDefault();
+                put('/image', new FormData(document.fm)).then(res => {
+                    document.fm.image.value = null;
+                    alert(res.message);
+                });
+            }
+
+            function getImageList() {
+                get('/image/i').then(res => {
+                    let ids = res.message.split(',');
+                    let index = 0;
+                    const si = setInterval(() => {
+                        if (index >= ids.length) {
+                            clearInterval(si);
+                            let msg = document.createElement('div');
+                            msg.innerText = '画像をすべて表示しました';
+                            document.getElementById('images').appendChild(msg);
+                            return;
+                        }
+                        let img = document.createElement('img');
+                        img.src = '/image/i' + ids[index];
+                        img.loading = 'lazy';
+                        img.addEventListener('click', e => window.open(e.target.src));
+                        document.getElementById('images').appendChild(img);
+                        index++;
+                    }, 1000);
+                });
+            }
+        </script>
+    </body>
+</html>

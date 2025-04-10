@@ -5,10 +5,10 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"hosone/pkg/database"
 	"hosone/pkg/util"
 	"html/template"
 	"io"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"net/smtp"
@@ -52,6 +52,9 @@ func main() {
 	sentNotifs = make([]Notif, 0)
 
 	go func() {
+		if os.Getenv("ENV") == "dev" {
+			return
+		}
 		ticker := time.NewTicker(time.Minute * 5)
 		defer ticker.Stop()
 		count := 0
@@ -88,6 +91,7 @@ func main() {
 	mux.Handle("/st/", http.StripPrefix("/st/", http.FileServer(http.Dir("./static"))))
 	mux.HandleFunc("/", IndexHandle)
 	mux.HandleFunc("/iconring", IconRingHandle)
+	mux.HandleFunc("/image/", ImageHandle)
 	mux.HandleFunc("/git", GitHandle)
 	mux.HandleFunc("/hook", WebHookHandle)
 	mux.HandleFunc("/materials/", MatHandle)
@@ -278,8 +282,167 @@ func IconRingHandle(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func ImageHandle(w http.ResponseWriter, r *http.Request) {
+	w.Header().Add("Content-Type", "text/html; charset=utf-8")
+
+	//UA無しは通さない
+	if r.UserAgent() == "" {
+		http.Error(w, "UAつけて出直してこい", 403)
+		return
+	} else if strings.HasPrefix(r.UserAgent(), "curl/") {
+		//curl禁止
+		http.Error(w, "ばーかばーか", 403)
+		return
+	} else if strings.HasPrefix(r.UserAgent(), "python-requests/") {
+		//許さない
+		http.Error(w, "帰れカス", 403)
+		return
+	} else if strings.Index(r.UserAgent(), "AhrefsBot") > 0 {
+		http.Error(w, "しつこいわボケ殺すぞ", 403)
+	}
+
+	if r.Method == http.MethodGet {
+		cookie, err := r.Cookie("hosone_image")
+		if err == nil {
+			if cookie.Value == "myporncollections" {
+				if strings.HasPrefix(r.URL.Path, "/image/i") {
+					id := r.URL.Path[len("/image/i"):]
+					db := database.Connect()
+					defer db.Close()
+					if id == "" {
+						q := "select group_concat(id) from images order by id desc"
+						var ids string
+						err = db.QueryRow(q).Scan(&ids)
+						if err != nil {
+							ApiResponse(w, "null")
+							return
+						}
+						ApiResponse(w, ids)
+					} else {
+						q := "select img from images where id = ?"
+						var imgData []byte
+						err = db.QueryRow(q, id).Scan(&imgData)
+						if err != nil {
+							http.Error(w, "Failed", http.StatusBadRequest)
+							return
+						}
+						contentType := http.DetectContentType(imgData)
+
+						if imgData == nil {
+							http.Error(w, "Failed", http.StatusNotFound)
+							return
+						}
+
+						w.Header().Set("Content-Type", contentType)
+						w.Header().Set("Content-Disposition", fmt.Sprintf("inline; filename=\"image-%s\"", id))
+						w.Header().Set("Content-Length", strconv.Itoa(len(imgData)))
+
+						w.Write(imgData)
+					}
+					return
+				}
+				if err := template.Must(template.ParseFiles("temp/image.html")).Execute(w, nil); err != nil {
+					log.Println(err)
+					http.Error(w, "500", 500)
+					return
+				}
+				return
+			}
+		}
+		fmt.Fprint(w, `
+			<!DOCTYPE html>
+			<html lang="ja">
+				<head>
+					<meta charset="utf-8">
+					<meta name="viewport" content="width=device-width,initial-scale=1">
+					<title>Images</title>
+				</head>
+				<body>
+					<form name="fm" method="POST" action="/image">
+						<input type="password" name="pw">
+						<button>GO</button>
+					</form>
+				</body>
+			</html>
+		`)
+	} else if r.Method == http.MethodPost {
+		if r.FormValue("pw") != "myporncollections" {
+			http.Redirect(w, r, "/image", http.StatusSeeOther)
+			return
+		}
+		tm := time.Now()
+		tm = tm.Add(time.Hour * 24)
+		http.SetCookie(w, &http.Cookie{
+			Name:     "hosone_image",
+			Value:    "myporncollections",
+			Path:     "/image",
+			HttpOnly: true,
+			MaxAge:   3600 * 24,
+			Expires:  tm,
+		})
+		http.Redirect(w, r, "/image", http.StatusSeeOther)
+	} else if r.Method == http.MethodPut {
+		if r.FormValue("pw") != "myporncollections" {
+			http.Error(w, "", http.StatusForbidden)
+			return
+		}
+		r.ParseMultipartForm(32 << 20)
+
+		db := database.Connect()
+		defer db.Close()
+
+		files := r.MultipartForm.File["image"]
+
+		for i, fileHeader := range files {
+			file, err := fileHeader.Open()
+			if err != nil {
+				util.Log()
+				log.Println(err)
+				ApiResponse(w, "ファイルのオープンに失敗しました")
+				return
+			}
+			defer file.Close()
+
+			var buf bytes.Buffer
+			if _, err = io.Copy(&buf, file); err != nil {
+				util.Log()
+				log.Println(err)
+				ApiResponse(w, "ファイルの読み込みに失敗しました")
+				return
+			}
+
+			imgData := buf.Bytes()
+
+			contentType := http.DetectContentType(imgData)
+
+			if contentType != "image/jpeg" && contentType != "image/png" && contentType != "image/jpg" {
+				ApiResponse(w, fmt.Sprintf("サポートされていない画像形式です: %s", contentType))
+				return
+			}
+
+			_, err = db.Exec("INSERT INTO images (img) VALUES (?)", imgData)
+			if err != nil {
+				util.Log()
+				log.Println(err)
+				ApiResponse(w, strconv.Itoa(i+1)+"番目の画像の登録で失敗しました")
+				return
+			}
+		}
+		ApiResponse(w, "完了")
+	}
+}
+
+func ApiResponse(w http.ResponseWriter, msg string) {
+	bts, _ := json.Marshal(struct {
+		Message string `json:"message"`
+	}{
+		Message: msg,
+	})
+	w.Write(bts)
+}
+
 func Page404(w http.ResponseWriter) {
-	b, err := ioutil.ReadFile("temp/404.html")
+	b, err := os.ReadFile("temp/404.html")
 	if err != nil {
 		log.Print(err)
 		b = []byte("404 Page Not Found")
@@ -376,7 +539,7 @@ func FaviconHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 func setBlockedIp() error {
-	b, err := ioutil.ReadFile("blockedip.txt")
+	b, err := os.ReadFile("blockedip.txt")
 	if err != nil {
 		return err
 	} else {
@@ -414,7 +577,7 @@ func WebHookHandle(w http.ResponseWriter, r *http.Request) {
 		}
 		fmt.Fprintf(w, "<pre>"+string(out2)+"</pre>")
 		content := strconv.Itoa(os.Getpid()) + " ./root/hosone/hosone ssl"
-		err = ioutil.WriteFile("/root/rebuild/link.txt", []byte(content), 0666)
+		err = os.WriteFile("/root/rebuild/link.txt", []byte(content), 0666)
 		if err != nil {
 			util.Log()
 		}
