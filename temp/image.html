@@ -38,7 +38,7 @@
             <input type="hidden" name="pw" value="myporncollections">
             <input type="file" name="image" onchange="viewImage(this)">
             <img id="preview">
-            <button>Send</button>
+            <button id="sendButton">Send</button>
         </form>
         <div id="buttons_area">
             <button onclick="getImageList()">Get images</button>
@@ -61,8 +61,14 @@
             function sendFile(e) {
                 e.preventDefault();
                 if (document.fm.image.files.length == 0) return;
+                document.getElementById('sendButton').innerText = 'wait...';
+                document.getElementById('sendButton').disabled = true;
                 put('/image', new FormData(document.fm)).then(res => {
                     document.fm.image.value = null;
+                    document.getElementById('preview').src = '';
+                    document.getElementById('preview').style.display = 'none';
+                    document.getElementById('sendButton').innerText = 'Send';
+                    document.getElementById('sendButton').disabled = false;
                     alert(res.message);
                 });
             }
