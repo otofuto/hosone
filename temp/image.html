@@ -53,6 +53,7 @@
                     const reader = new FileReader();
                     reader.addEventListener('load', () => {
                         document.getElementById('preview').src = reader.result;
+                        document.getElementById('preview').removeAttribute('style');
                     }, false);
                     reader.readAsDataURL(inp.files[0]);
                 }
