@@ -76,6 +76,7 @@
             function getImageList() {
                 get('/image/i').then(res => {
                     let ids = res.message.split(',');
+                    ids.sort((a, b) => a < b ? 1 : -1);
                     let index = 0;
                     const si = setInterval(() => {
                         if (index >= ids.length) {
